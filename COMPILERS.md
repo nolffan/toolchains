@@ -15,6 +15,8 @@ testimony.
 | `msvc-6.00-8447/` | 12.00.8168 | **12.00.8447** | VC6 SP3 |
 | `msvc-6.00-9782/` | 12.00.8804 | **12.00.9782** | VC6 SP6 (the default) |
 | `icl-4.0/` | Intel C/C++ 4.0 build 99100 | -- | 1999 |
+| `icl-4.5/` | Intel C/C++ 4.5 build 00015 | -- | 2000 |
+| `icl-5.0.1/` | Intel C++ 5.0.1 build 010525Z | -- | 2001 |
 | `icl-6.0.078/` | Intel C++ 6.0 build 020321Z | -- | 2002 |
 | `icl-8.0.046/` | Intel C++ 8.0 build 20040211Z | -- | 2004 |
 | `icl-9.0.022/` | Intel C++ 9.0 build 20050809Z | -- | 2005 |
@@ -119,10 +121,11 @@ its licence check disabled by one byte, as the archive's own `$ICL.COM`
 documents (`toolchain/README.md`). It runs against `msvc-6.00-8168`'s headers
 and libraries, which `run_icl` puts on its paths.
 
-`icl-6.0.078`, `icl-8.0.046` and `icl-9.0.022` are held for testing; no
-build target uses them. None of them built `d3d.ren`: their `libm.lib`
-carries no SCCS idents at all.
+`icl-4.5`, `icl-5.0.1`, `icl-6.0.078`, `icl-8.0.046` and `icl-9.0.022` are
+held for testing; no build target uses them. None of 6.0, 8.0 or 9.0 built
+`d3d.ren`: their `libm.lib` carries no SCCS idents at all. 4.5 and 5.0.1
+have not been tried against it yet.
 
-**Not held: Intel C/C++ 4.5 and 5.0.** NOLF and NOLF2 may have been built
-with one of these releases, and that cannot be ruled out until they have
-been tried. If you have either, see "Wanted" in `toolchain/README.md`.
+**Not held: the original Intel C++ 5.0** (5.0.1 replaces it). NOLF and NOLF2
+may have been built with it, and that cannot be ruled out until it has been
+tried. If you have it, see "Wanted" in `toolchain/README.md`.

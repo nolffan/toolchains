@@ -2,7 +2,8 @@
 # Assemble toolchain/ from public copies of the original compiler media.
 #
 #   bash toolchain/fetch.sh [--force] [msvc-6.00-9782] [msvc-6.00-8168] [msvc-6.00-8447]
-#                           [icl-4.0] [icl-6.0.078] [icl-8.0.046] [icl-9.0.022]
+#                           [icl-4.0] [icl-4.5] [icl-5.0.1] [icl-6.0.078]
+#                           [icl-8.0.046] [icl-9.0.022]
 #
 # `make toolchain` runs this in the build container, which has every tool it
 # needs (curl, bsdtar, 7z, cabextract, unar, unshield, python3). With no names
@@ -38,6 +39,18 @@ ICL8_URL="$ICL_ITEM/Intel%20C%2B%2B%20Compiler.ver.8.0.046.English.zip"
 ICL8_SHA=0f03ac30d5c09410e197583212178bb84ff958013a69f761e5be361784620437
 ICL9_URL="$ICL_ITEM/Intel%20C%2B%2B%20Compiler.ver.9.0.022.English.zip"
 ICL9_SHA=914b82108181c1cf56a76ddb64c178ded66045c4013cd577e86a662b7e143dfa
+# Intel C/C++ 4.5 and 5.0.1 come from two Russian compilation CDs; archive.org
+# serves single files out of their ISOs, so only the compiler is downloaded.
+ICL45_DIR='https://archive.org/download/programmer-2001-disc-2/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%81%D1%82%D1%83%202001%20%D0%B4%D0%B8%D1%81%D0%BA%202.iso/C/Intel%20C%20Plus%20Plus%20Compiler%20v4.5'
+ICL45_URL="$ICL45_DIR/c45eval.exe"
+ICL45_SHA=0dcfa923f636507043353f1c30df39050978f58b9be705857a3e263653e14a45
+ICL5_DIR='https://archive.org/download/latest-versions-of-c/C%2B%2B%20%D0%9F%D0%BE%D1%81%D0%BB%D0%B5%D0%B4%D0%BD%D0%B8%D0%B5%20%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D0%B8.iso/Cpp/INTEL%20C%2B%2B%20COMPILER%20v5.0115'
+ICL5_CAB_URL="$ICL5_DIR/compiler/icl/data1.cab"
+ICL5_CAB_SHA=7164806eb89e115e96872b6167ae62e43ee13b00b4aa37e55608ac5a21969d9c
+ICL5_HDR_URL="$ICL5_DIR/compiler/icl/data1.hdr"
+ICL5_HDR_SHA=1a8e0f5cce8694ef209296cb55fc5decd2a0bff07548513718fc06cc4d6d81bb
+ICL5_LIC_URL="$ICL5_DIR/WINDOW~1.LIC"
+ICL5_LIC_SHA=c7af001728c3e53c6e945120fb80ba347d9cd78a697a2a2776419f45bd7d09ad
 # A portable VC6 SP6 tree, pinned to one commit. GitHub does not promise that
 # its generated tarballs are byte-stable, so the archive itself is not
 # pinned; the extracted tree is, by its digest below.
@@ -50,11 +63,13 @@ declare -A TREE_SHA=(
     [msvc-6.00-8168]=17b81cd04ffa07047450a2f6c706f51f76b1610f30835e12e25d0b742b2c986a
     [msvc-6.00-8447]=a395f322bc376675f232fdf54d127b38f40383571715e968ecf7343bebf2890e
     [icl-4.0]=0355308ba40347b1ec7d75ffc46736735b5230a25c27aa9e5f4f6e399a6bb8f7
+    [icl-4.5]=c7e45803afa919a8b256e6050c92cb1021e98c11b59e416e72f05a25126fdbab
+    [icl-5.0.1]=2f050e98b9985a39652b167a6b7fa853cc9dddc7b048775e7778af24fc46650f
     [icl-6.0.078]=9cbdd9f09e77bf65bf4f64246df57147b1f83dbc2b7bdae546a1a8af24a2633c
     [icl-8.0.046]=733c6bbded14217994057c2eb50d5e3832c43f5466f2da6b4b0976f98929db4d
     [icl-9.0.022]=161d54d0cec4b79dbc0022763f6bc00df4d2bf314679aa61bef78c2d130a991c
 )
-ALL=(msvc-6.00-9782 msvc-6.00-8168 msvc-6.00-8447 icl-4.0 icl-6.0.078 icl-8.0.046 icl-9.0.022)
+ALL=(msvc-6.00-9782 msvc-6.00-8168 msvc-6.00-8447 icl-4.0 icl-4.5 icl-5.0.1 icl-6.0.078 icl-8.0.046 icl-9.0.022)
 
 die() { echo "toolchain: $*" >&2; exit 1; }
 
@@ -199,6 +214,57 @@ build_icl4() {
     rm -rf "$x"
 }
 
+# Intel C/C++ 4.5 (build 00015): the evaluation release, c45eval.exe, a
+# self-extracting archive around an InstallShield setup laid out as 4.0's.
+# The 30-day trial is one call in icl.exe's main, whose result decides
+# whether to go on; it also builds the watermark that is passed to mcpcom
+# as -mP2OPT_embed_string= and embedded in every object. Replacing the call
+# (offset 0x205A) with mov al,1 drops both, as a licensed copy would. (The
+# patch distributed with it, crack.exe, jumps over the argument parser as
+# well and leaves a compiler that sees no files.)
+build_icl45() {
+    local out="$1" x="$WORK/icl45"
+    fetch icl-4.5-c45eval.exe "$ICL45_URL" "$ICL45_SHA"
+    mkdir -p "$x/setup" "$x/files" "$out/BIN" "$out/INCLUDE" "$out/LIB"
+    7z x -y -o"$x/setup" "$DL/icl-4.5-c45eval.exe" >/dev/null
+    unshield -d "$x/files" x "$x/setup/compiler/icc/data1.cab" >/dev/null
+    local f="$x/files"
+    cp "$f"/Compiler_Bin_Files/* "$f"/Compiler_Bin_Files_\(shared\)/* \
+       "$f"/Shared_DLLs/Msvcrt.dll "$out/BIN/"
+    cp "$f"/Compiler_Include_files/* "$out/INCLUDE/"
+    cp "$f"/Compiler_Lib_files_\(shared\)/* "$out/LIB/"
+    local icl="$out/BIN/icl.exe"
+    [ "$(stat -c %s "$icl")" = 167936 ] || die "icl.exe is not the expected 167,936 bytes"
+    [ "$(od -An -tx1 -j $((0x205A)) -N5 "$icl" | tr -d ' ')" = e8d1780000 ] \
+        || die "icl.exe: unexpected bytes at 0x205A"
+    cp "$icl" "$icl.orig"
+    printf '\xb0\x01\x90\x90\x90' | dd of="$icl" bs=1 seek=$((0x205A)) conv=notrunc status=none
+    chmod -R u+w "$out"
+    rm -rf "$x"
+}
+
+# Intel C++ 5.0.1 (build 010525Z): the IA-32 compiler's InstallShield cabinet
+# from the 5.0.1 release, laid out as 4.0's, with the release's licence file
+# (WINDOW~1.LIC on the disc) in BIN/ as intel.lic: FLEXlm finds it there.
+build_icl5() {
+    local out="$1" x="$WORK/icl5"
+    fetch icl-5.0.1-data1.cab "$ICL5_CAB_URL" "$ICL5_CAB_SHA"
+    fetch icl-5.0.1-data1.hdr "$ICL5_HDR_URL" "$ICL5_HDR_SHA"
+    fetch icl-5.0.1.lic "$ICL5_LIC_URL" "$ICL5_LIC_SHA"
+    mkdir -p "$x/cab" "$x/files" "$out/BIN" "$out/INCLUDE" "$out/LIB"
+    cp "$DL/icl-5.0.1-data1.cab" "$x/cab/data1.cab"
+    cp "$DL/icl-5.0.1-data1.hdr" "$x/cab/data1.hdr"
+    unshield -d "$x/files" x "$x/cab/data1.cab" >/dev/null
+    local f="$x/files"
+    cp "$f"/Compiler32_Bin_Files/* "$f"/Compiler32_Bin_Files_\(shared\)/* \
+       "$f"/Shared_DLLs/Msvcrt.dll "$out/BIN/"
+    cp "$f"/Compiler32_Include_files/* "$out/INCLUDE/"
+    cp "$f"/Compiler32_Lib_files_\(shared\)/* "$out/LIB/"
+    cp "$DL/icl-5.0.1.lic" "$out/BIN/intel.lic"
+    chmod -R u+w "$out"
+    rm -rf "$x"
+}
+
 # msi_tree MSI CAB PREFIX OUT: unpack what a Windows Installer package installs
 # below PREFIX (a path from its TARGETDIR, matched without regard to case)
 # into OUT, upper-casing the first directory below PREFIX (Bin -> BIN) to
@@ -293,6 +359,8 @@ build() {
         msvc-6.00-8168) build_8168 "$tmp" ;;
         msvc-6.00-8447) build_8447 "$tmp" ;;
         icl-4.0)        build_icl4 "$tmp" ;;
+        icl-4.5)        build_icl45 "$tmp" ;;
+        icl-5.0.1)      build_icl5 "$tmp" ;;
         icl-6.0.078)    build_icl6 "$tmp" ;;
         icl-8.0.046)    build_icl8 "$tmp" ;;
         icl-9.0.022)    build_icl9 "$tmp" ;;
@@ -309,8 +377,8 @@ targets=()
 for a in "$@"; do
     case "$a" in
         --force) FORCE=1 ;;
-        -h|--help) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
-        msvc-6.00-9782|msvc-6.00-8168|msvc-6.00-8447|icl-4.0|icl-6.0.078|icl-8.0.046|icl-9.0.022)
+        -h|--help) sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        msvc-6.00-9782|msvc-6.00-8168|msvc-6.00-8447|icl-4.0|icl-4.5|icl-5.0.1|icl-6.0.078|icl-8.0.046|icl-9.0.022)
             targets+=("$a") ;;
         *) die "unknown argument: $a (try --help)" ;;
     esac
