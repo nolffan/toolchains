@@ -2,7 +2,7 @@
 # Assemble toolchain/ from public copies of the original compiler media.
 #
 #   bash toolchain/fetch.sh [--force] [msvc-6.00-9782] [msvc-6.00-8168] [msvc-6.00-8447]
-#                           [icl-4.0] [icl-4.5] [icl-5.0.1] [icl-6.0.078]
+#                           [msvc-6.00-8966] [dxsdk-8.1] [icl-4.0] [icl-4.5] [icl-5.0.1] [icl-6.0.078]
 #                           [icl-8.0.046] [icl-9.0.022]
 #
 # `make toolchain` runs this in the build container, which has every tool it
@@ -10,7 +10,7 @@
 # it builds every tree. A tree that is already present and matches its
 # digest is left alone; one that does not match is an error unless --force.
 #
-# Downloads (about 2.4 GB) are verified by SHA-256 and kept in
+# Downloads (about 2.7 GB) are verified by SHA-256 and kept in
 # toolchain/downloads/ so a rerun fetches nothing; delete that directory once
 # the trees are built if you want the space back. Every finished tree is
 # checked against a digest of its full contents (every file's SHA-256), so
@@ -29,6 +29,10 @@ VS6SP3_URL='https://archive.org/download/msvs6sp3/Microsoft%20Visual%20Studio%20
 VS6SP3_SHA=92122f31beb62d99eb6a0545f5af0366caaa940b46515cd393ca15fe03741814
 TECHNET_URL='https://archive.org/download/ms-technet-tnsb9908/TNSB9908.iso'
 TECHNET_SHA=f3eefbd0b7d7958a44ef63c2bb28bcf75ef8d5adcd2e65082f54fb399004a928
+VS6SP5_URL='https://archive.org/download/vs6sp5/vs6sp5.exe'
+VS6SP5_SHA=10a834041223ad21181c0e87c0a90930d976498556af2e8f959a044101e6a604
+DXSDK81_URL='https://archive.org/download/dx81sdk_full/dx81sdk_full.exe'
+DXSDK81_SHA=73f6791e0ae7f8a1d74f71d8ebe517a79c0cbf03fd344424696fd7a3816d2d02
 # The Intel compilers, as collected at archive.org/details/intel-c-compilers.
 ICL_ITEM='https://archive.org/download/intel-c-compilers'
 ICL_URL="$ICL_ITEM/ICL.ver.4.0%20%28trial%20%26%20patch%29.English.rar"
@@ -62,6 +66,8 @@ declare -A TREE_SHA=(
     [msvc-6.00-9782]=78ff2ccc2c2c5f9e38cb0155811672b0a4de56f1e673ef779442ce4e89d93edb
     [msvc-6.00-8168]=17b81cd04ffa07047450a2f6c706f51f76b1610f30835e12e25d0b742b2c986a
     [msvc-6.00-8447]=a395f322bc376675f232fdf54d127b38f40383571715e968ecf7343bebf2890e
+    [msvc-6.00-8966]=43aa462a12e7dfc72055ee8253a11a995d8c092f61a2ccc2985bb1150d39a3ca
+    [dxsdk-8.1]=f086a340ad92e84b0e28325088c47247ae4048467e5cee6208cb396028c17df8
     [icl-4.0]=0355308ba40347b1ec7d75ffc46736735b5230a25c27aa9e5f4f6e399a6bb8f7
     [icl-4.5]=c7e45803afa919a8b256e6050c92cb1021e98c11b59e416e72f05a25126fdbab
     [icl-5.0.1]=2f050e98b9985a39652b167a6b7fa853cc9dddc7b048775e7778af24fc46650f
@@ -69,7 +75,7 @@ declare -A TREE_SHA=(
     [icl-8.0.046]=733c6bbded14217994057c2eb50d5e3832c43f5466f2da6b4b0976f98929db4d
     [icl-9.0.022]=161d54d0cec4b79dbc0022763f6bc00df4d2bf314679aa61bef78c2d130a991c
 )
-ALL=(msvc-6.00-9782 msvc-6.00-8168 msvc-6.00-8447 icl-4.0 icl-4.5 icl-5.0.1 icl-6.0.078 icl-8.0.046 icl-9.0.022)
+ALL=(msvc-6.00-9782 msvc-6.00-8168 msvc-6.00-8447 msvc-6.00-8966 dxsdk-8.1 icl-4.0 icl-4.5 icl-5.0.1 icl-6.0.078 icl-8.0.046 icl-9.0.022)
 
 die() { echo "toolchain: $*" >&2; exit 1; }
 
@@ -172,6 +178,49 @@ build_8447() {
     done
     long_names "$out/INCLUDE"
     cp "$x/core/msvcep.dll" "$out/BIN/c2.dll"
+    chmod -R u+w "$out"
+    rm -rf "$x"
+}
+# VC6 SP5 (front end 12.00.8804, back end c2 12.00.8966): the SP3 tree with
+# Service Pack 5's VC98 files laid over it. SP5 is cumulative and carries its
+# new back end the way the TechNet SP3 does, as msvcep.dll beside the
+# cabinets, which setup installs as VC98/BIN/C2.DLL. A verified SP3 tree
+# already here is copied rather than built again.
+build_8966() {
+    local out="$1" x="$WORK/sp5" d
+    if [ -d "$TC/msvc-6.00-8447" ] && [ "$(tree_sha "$TC/msvc-6.00-8447")" = "${TREE_SHA[msvc-6.00-8447]}" ]; then
+        cp -a "$TC/msvc-6.00-8447" "$out"
+    else
+        build_8447 "$out"
+    fi
+    fetch VS6SP5.exe "$VS6SP5_URL" "$VS6SP5_SHA"
+    mkdir -p "$x/pkg" "$x/files"
+    cabextract -q -d "$x/pkg" "$DL/VS6SP5.exe"
+    [ -f "$x/pkg/msvcep.dll" ] || die "the SP5 package has no msvcep.dll"
+    (cd "$x/pkg" && cabextract -q -d "$x/files" VS6sp51.cab)
+    chmod -R u+w "$x"
+    lowercase "$x/files"
+    [ -d "$x/files/vc98/bin" ] || die "the SP5 package has no vc98/bin"
+    for d in "${VC_DIRS[@]}"; do
+        d=$(printf '%s' "$d" | tr '[:upper:]' '[:lower:]')
+        cp -a "$x/files/vc98/$d/." "$out/${d^^}/"
+    done
+    long_names "$out/INCLUDE"
+    cp "$x/pkg/msvcep.dll" "$out/BIN/c2.dll"
+    chmod -R u+w "$out"
+    rm -rf "$x"
+}
+
+# The DirectX 8.1 SDK (October 2001): its include/ and lib/ as shipped, and
+# its readme. The download is a self-extracting zip whose DXSDK/ folder is
+# the SDK's install tree.
+build_dxsdk81() {
+    local out="$1" x="$WORK/dx81"
+    fetch dx81sdk_full.exe "$DXSDK81_URL" "$DXSDK81_SHA"
+    mkdir -p "$x" "$out"
+    7z x -y -o"$x" "$DL/dx81sdk_full.exe" \
+        DXF/DXSDK/include DXF/DXSDK/lib DXF/DXSDK/DXReadme.txt >/dev/null
+    mv "$x/DXF/DXSDK/include" "$x/DXF/DXSDK/lib" "$x/DXF/DXSDK/DXReadme.txt" "$out/"
     chmod -R u+w "$out"
     rm -rf "$x"
 }
@@ -358,6 +407,8 @@ build() {
         msvc-6.00-9782) build_9782 "$tmp" ;;
         msvc-6.00-8168) build_8168 "$tmp" ;;
         msvc-6.00-8447) build_8447 "$tmp" ;;
+        msvc-6.00-8966) build_8966 "$tmp" ;;
+        dxsdk-8.1)      build_dxsdk81 "$tmp" ;;
         icl-4.0)        build_icl4 "$tmp" ;;
         icl-4.5)        build_icl45 "$tmp" ;;
         icl-5.0.1)      build_icl5 "$tmp" ;;
@@ -378,7 +429,7 @@ for a in "$@"; do
     case "$a" in
         --force) FORCE=1 ;;
         -h|--help) sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
-        msvc-6.00-9782|msvc-6.00-8168|msvc-6.00-8447|icl-4.0|icl-4.5|icl-5.0.1|icl-6.0.078|icl-8.0.046|icl-9.0.022)
+        msvc-6.00-9782|msvc-6.00-8168|msvc-6.00-8447|msvc-6.00-8966|dxsdk-8.1|icl-4.0|icl-4.5|icl-5.0.1|icl-6.0.078|icl-8.0.046|icl-9.0.022)
             targets+=("$a") ;;
         *) die "unknown argument: $a (try --help)" ;;
     esac
