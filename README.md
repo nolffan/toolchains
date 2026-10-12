@@ -32,6 +32,7 @@ four compiler executables exist before it starts.
 | `icl-6.0.078/` | Intel C++ Compiler 6.0 for 32-bit applications (build 020321Z), same layout | candidates for testing, not used by the build | 26 MB |
 | `icl-8.0.046/` | Intel C++ Compiler 8.0 (build 20040211Z), same layout | candidates for testing, not used by the build | 29 MB |
 | `icl-9.0.022/` | Intel C++ Compiler 9.0 (build 20050809Z), same layout | candidates for testing, not used by the build | 37 MB |
+| `directmusic-5.3.1.904/` | Microsoft DirectMusic from DirectX 9.0c: `dmband`, `dmcompos`, `dmime`, `dmloader`, `dmscript`, `dmstyle`, `dmsynth`, `dmusic`, `dswave`.dll, with `SHA256SUMS`. File versions 5.3.1.904 (`dmime`, `dmusic`) and 5.3.0.900 (the rest); the directory is named after the newest | not a compiler: the modern build installs them in the game directory, renamed `ms_<name>.dll`, so the music plays under Wine and Proton without winetricks (nolfsrc `src/modern/directmusic/README.md`) | 0.7 MB |
 
 About 710 MB in all.
 
@@ -59,6 +60,7 @@ different (though working) code.
 | `icl-6.0.078` | The x86 package of the 6.0.078 release ([archive.org](https://archive.org/details/intel-c-compilers)): `msi.py` reads the package's tables to place each file from `Data.Cab` where setup would install it, and `Intel/Compiler60/IA32/{Bin,Include,Lib}` become `BIN/INCLUDE/LIB`. The FLEXlm licence check is one call in `icl.exe`, which the release's own patcher (`Crack/crk-ic60078.exe`) replaces: offset `0x4063`, `e8 88 9c 00 00` -> `90 90 90 33 c0`. `icl.exe.orig` is the unmodified file. |
 | `icl-8.0.046` | The IA32 package inside `W_CC_PC_8.0.046.exe` of the 8.0.046 release ([archive.org](https://archive.org/details/intel-c-compilers)), unpacked the same way from `Intel/CPP/Compiler80/Ia32`. FLEXlm reads licence files from the compiler's own `BIN/`, so the release's `intel.lic` is there; `icl.exe` is unmodified. |
 | `icl-9.0.022` | The IA32 compiler package of the 9.0.022 release ([archive.org](https://archive.org/details/intel-c-compilers)), unpacked the same way from `Intel/Compiler/C++/9.0/IA32`, with the release's `Crack/intel_TBE.lic` in `BIN/`; `icl.exe` is unmodified. |
+| `directmusic-5.3.1.904` | `dxnt.cab` inside Microsoft's February 2010 DirectX End-User Runtime redistributable, `directx_feb2010_redist.exe` (SHA-256 `f6d191e89a963d7cca34f169d30f49eab99c1ed3bb92da73ec43617caaa1e93f`, the file winetricks' DirectMusic verbs use; [download.microsoft.com](https://download.microsoft.com/download/E/E/1/EE17FF74-6C45-4575-9CF4-7FC2597ACD18/directx_feb2010_redist.exe), [archive.org](https://web.archive.org/web/20100205000000id_/https://download.microsoft.com/download/E/E/1/EE17FF74-6C45-4575-9CF4-7FC2597ACD18/directx_feb2010_redist.exe)): `cabextract -F dxnt.cab` on the redistributable, then `cabextract -L -F <name>.dll dxnt.cab`. Unmodified. |
 
 ## Wanted: Intel C++ 5.0
 

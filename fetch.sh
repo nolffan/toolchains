@@ -3,7 +3,7 @@
 #
 #   bash toolchain/fetch.sh [--force] [msvc-6.00-9782] [msvc-6.00-8168] [msvc-6.00-8447]
 #                           [msvc-6.00-8966] [dxsdk-8.1] [icl-4.0] [icl-4.5] [icl-5.0.1] [icl-6.0.078]
-#                           [icl-8.0.046] [icl-9.0.022]
+#                           [icl-8.0.046] [icl-9.0.022] [directmusic-5.3.1.904]
 #
 # `make toolchain` runs this in the build container, which has every tool it
 # needs (curl, bsdtar, 7z, cabextract, unar, unshield, python3). With no names
@@ -33,6 +33,11 @@ VS6SP5_URL='https://archive.org/download/vs6sp5/vs6sp5.exe'
 VS6SP5_SHA=10a834041223ad21181c0e87c0a90930d976498556af2e8f959a044101e6a604
 DXSDK81_URL='https://archive.org/download/dx81sdk_full/dx81sdk_full.exe'
 DXSDK81_SHA=73f6791e0ae7f8a1d74f71d8ebe517a79c0cbf03fd344424696fd7a3816d2d02
+# The February 2010 DirectX End-User Runtime redistributable (the one
+# winetricks' DirectMusic verbs use), from the Wayback Machine's copy of
+# Microsoft's download.
+DXFEB2010_URL='https://web.archive.org/web/20100205000000id_/https://download.microsoft.com/download/E/E/1/EE17FF74-6C45-4575-9CF4-7FC2597ACD18/directx_feb2010_redist.exe'
+DXFEB2010_SHA=f6d191e89a963d7cca34f169d30f49eab99c1ed3bb92da73ec43617caaa1e93f
 # The Intel compilers, as collected at archive.org/details/intel-c-compilers.
 ICL_ITEM='https://archive.org/download/intel-c-compilers'
 ICL_URL="$ICL_ITEM/ICL.ver.4.0%20%28trial%20%26%20patch%29.English.rar"
@@ -74,8 +79,9 @@ declare -A TREE_SHA=(
     [icl-6.0.078]=9cbdd9f09e77bf65bf4f64246df57147b1f83dbc2b7bdae546a1a8af24a2633c
     [icl-8.0.046]=733c6bbded14217994057c2eb50d5e3832c43f5466f2da6b4b0976f98929db4d
     [icl-9.0.022]=161d54d0cec4b79dbc0022763f6bc00df4d2bf314679aa61bef78c2d130a991c
+    [directmusic-5.3.1.904]=f9ebf333a683b7c9e7df7b94ab7351a38a8f5e1eab72468899d6be199623a1be
 )
-ALL=(msvc-6.00-9782 msvc-6.00-8168 msvc-6.00-8447 msvc-6.00-8966 dxsdk-8.1 icl-4.0 icl-4.5 icl-5.0.1 icl-6.0.078 icl-8.0.046 icl-9.0.022)
+ALL=(msvc-6.00-9782 msvc-6.00-8168 msvc-6.00-8447 msvc-6.00-8966 dxsdk-8.1 icl-4.0 icl-4.5 icl-5.0.1 icl-6.0.078 icl-8.0.046 icl-9.0.022 directmusic-5.3.1.904)
 
 die() { echo "toolchain: $*" >&2; exit 1; }
 
@@ -391,6 +397,30 @@ build_icl9() {
     rm -rf "$x"
 }
 
+# Microsoft DirectMusic (file versions 5.3.1.904 and 5.3.0.900), not a
+# compiler: nolfsrc's modern build installs it in the game directory so the
+# music plays under Wine and Proton without winetricks. The nine DLLs as
+# dxnt.cab inside the February 2010 redistributable holds them, unmodified,
+# and SHA256SUMS of them, which the build checks before installing them.
+DIRECTMUSIC_DLLS=(dmband.dll dmcompos.dll dmime.dll dmloader.dll dmscript.dll
+                  dmstyle.dll dmsynth.dll dmusic.dll dswave.dll)
+build_directmusic() {
+    local out="$1" x="$WORK/dmusic" f
+    fetch directx_feb2010_redist.exe "$DXFEB2010_URL" "$DXFEB2010_SHA"
+    mkdir -p "$x" "$out"
+    # (both cabinets carry a few bytes of padding after their last block,
+    # which cabextract warns about; the tree digest checks what comes out)
+    cabextract -q -d "$x" -F dxnt.cab "$DL/directx_feb2010_redist.exe" 2>/dev/null
+    [ -f "$x/dxnt.cab" ] || die "the redistributable has no dxnt.cab"
+    for f in "${DIRECTMUSIC_DLLS[@]}"; do
+        cabextract -q -d "$out" -L -F "$f" "$x/dxnt.cab" 2>/dev/null
+        [ -f "$out/$f" ] || die "dxnt.cab has no $f"
+    done
+    (cd "$out" && sha256sum "${DIRECTMUSIC_DLLS[@]}" >SHA256SUMS)
+    chmod -R u+w "$out"
+    rm -rf "$x"
+}
+
 build() {
     local name="$1" dest="$TC/$1" tmp="$WORK/out-$1" got
     if [ -e "$dest" ]; then
@@ -415,6 +445,7 @@ build() {
         icl-6.0.078)    build_icl6 "$tmp" ;;
         icl-8.0.046)    build_icl8 "$tmp" ;;
         icl-9.0.022)    build_icl9 "$tmp" ;;
+        directmusic-5.3.1.904) build_directmusic "$tmp" ;;
     esac
     got=$(tree_sha "$tmp")
     [ "$got" = "${TREE_SHA[$name]}" ] \
@@ -429,7 +460,7 @@ for a in "$@"; do
     case "$a" in
         --force) FORCE=1 ;;
         -h|--help) sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
-        msvc-6.00-9782|msvc-6.00-8168|msvc-6.00-8447|msvc-6.00-8966|dxsdk-8.1|icl-4.0|icl-4.5|icl-5.0.1|icl-6.0.078|icl-8.0.046|icl-9.0.022)
+        msvc-6.00-9782|msvc-6.00-8168|msvc-6.00-8447|msvc-6.00-8966|dxsdk-8.1|icl-4.0|icl-4.5|icl-5.0.1|icl-6.0.078|icl-8.0.046|icl-9.0.022|directmusic-5.3.1.904)
             targets+=("$a") ;;
         *) die "unknown argument: $a (try --help)" ;;
     esac
