@@ -11,6 +11,7 @@ testimony.
 
 | Directory | Driver banner | c2.dll (back end) | Era |
 |---|---|---|---|
+| `msvc-7.10-3077/` | 13.10.3077 | **13.10.3077** | VS.NET 2003 RTM |
 | `msvc-6.00-8168/` | 12.00.8168 | **12.00.8168** | VC6 RTM |
 | `msvc-6.00-8447/` | 12.00.8168 | **12.00.8447** | VC6 SP3 |
 | `msvc-6.00-8966/` | 12.00.8804 | **12.00.8966** | VC6 SP5 |
@@ -143,3 +144,17 @@ have not been tried against it yet.
 **Not held: the original Intel C++ 5.0** (5.0.1 replaces it). NOLF and NOLF2
 may have been built with it, and that cannot be ruled out until it has been
 tried. If you have it, see "Wanted" in `toolchain/README.md`.
+
+## Contract J.A.C.K.: Visual C++ .NET 2003
+
+Every Monolith binary of Contract J.A.C.K. 1.1 (`Lithtech.exe`,
+`server.dll`, `ContractJack.exe`, `ContractJackServer.exe`, `GameSpy.dll`,
+`SndDrv.dll`, `ltmsg.dll`, `CShell.dll`, `Object.lto`, `ClientFx.fxd`,
+`CRes.dll`, `SRes.dll`) has a Rich header whose compiler rows are all
+13.10.3077: product 0x5f (C) and 0x60 (C++), with link 7.10.3077 (0x5a),
+cvtres (0x5e, 3052) and masm 7.10 (0x0f) -- `msvc-7.10-3077`. The rows at
+builds 2067 and 2179 (0x5d, 0x69) are the import and startup objects of
+`msvcrt.lib` itself: a test program linked here carries the same ones.
+`Lithtech.exe` adds VC 7.0-era objects (0x1c/0x1d, build 9178) and masm
+6.14 (8444) from a statically linked library, and `SndDrv.dll` one VC6
+object (8168) from another, as NOLF2's did.

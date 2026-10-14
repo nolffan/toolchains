@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Assemble toolchain/ from public copies of the original compiler media.
 #
-#   bash toolchain/fetch.sh [--force] [msvc-6.00-9782] [msvc-6.00-8168] [msvc-6.00-8447]
+#   bash toolchain/fetch.sh [--force] [msvc-7.10-3077] [msvc-6.00-9782] [msvc-6.00-8168] [msvc-6.00-8447]
 #                           [msvc-6.00-8966] [msvc-6.00-9044] [dxsdk-8.1] [icl-4.0] [icl-4.5] [icl-5.0.1] [icl-6.0.078]
 #                           [icl-8.0.046] [icl-9.0.022] [directmusic-5.3.1.904]
 #
@@ -10,7 +10,7 @@
 # it builds every tree. A tree that is already present and matches its
 # digest is left alone; one that does not match is an error unless --force.
 #
-# Downloads (about 2.7 GB) are verified by SHA-256 and kept in
+# Downloads (about 3.5 GB) are verified by SHA-256 and kept in
 # toolchain/downloads/ so a rerun fetches nothing; delete that directory once
 # the trees are built if you want the space back. Every finished tree is
 # checked against a digest of its full contents (every file's SHA-256), so
@@ -33,6 +33,13 @@ VS6SP5_URL='https://archive.org/download/vs6sp5/vs6sp5.exe'
 VS6SP5_SHA=10a834041223ad21181c0e87c0a90930d976498556af2e8f959a044101e6a604
 VCPP5_URL='https://archive.org/download/vcpp5/vcpp5.exe'
 VCPP5_SHA=96817df1bb0cb58e5b1d0fbcc5b993a63548182add1fbff66365401203ecfb6c
+# Visual Studio .NET 2003 Professional (May 2003), the two discs as archive.org
+# holds them: Disc 1 a 7z of a raw (2448-byte sector) MDF image, Disc 2 a plain
+# ISO from another dump.
+VS71D1_URL='https://archive.org/download/X09-46364/2003-05_X09-46364_X09-17449_VSPROD1.7z'
+VS71D1_SHA=ef23e22c458e509e5427851f06adecdb7472ff4369de573388326083b87aa6e3
+VS71D2_URL='https://archive.org/download/microsoft-visual-studio-.-net-2003-professional-disc-2/Microsoft%20Visual%20Studio%20.NET%202003%20Professional%20-%20Disc%202.iso'
+VS71D2_SHA=75a818e81ea1609da61f2916a74548e0448fd85787245b67f3acc5805461ae17
 DXSDK81_URL='https://archive.org/download/dx81sdk_full/dx81sdk_full.exe'
 DXSDK81_SHA=73f6791e0ae7f8a1d74f71d8ebe517a79c0cbf03fd344424696fd7a3816d2d02
 # The February 2010 DirectX End-User Runtime redistributable (the one
@@ -70,6 +77,7 @@ MSVC600_URL="https://codeload.github.com/itsmattkc/MSVC600/tar.gz/$MSVC600_COMMI
 
 # --- the finished trees: SHA-256 over `sha256sum` of every file, sorted -----
 declare -A TREE_SHA=(
+    [msvc-7.10-3077]=566e648d62eca82c7a035a2eb3cdcc8467480a02e4d905784dfb55eda5d7ce6f
     [msvc-6.00-9782]=78ff2ccc2c2c5f9e38cb0155811672b0a4de56f1e673ef779442ce4e89d93edb
     [msvc-6.00-8168]=17b81cd04ffa07047450a2f6c706f51f76b1610f30835e12e25d0b742b2c986a
     [msvc-6.00-8447]=a395f322bc376675f232fdf54d127b38f40383571715e968ecf7343bebf2890e
@@ -84,7 +92,7 @@ declare -A TREE_SHA=(
     [icl-9.0.022]=161d54d0cec4b79dbc0022763f6bc00df4d2bf314679aa61bef78c2d130a991c
     [directmusic-5.3.1.904]=f9ebf333a683b7c9e7df7b94ab7351a38a8f5e1eab72468899d6be199623a1be
 )
-ALL=(msvc-6.00-9782 msvc-6.00-8168 msvc-6.00-8447 msvc-6.00-8966 msvc-6.00-9044 dxsdk-8.1 icl-4.0 icl-4.5 icl-5.0.1 icl-6.0.078 icl-8.0.046 icl-9.0.022 directmusic-5.3.1.904)
+ALL=(msvc-7.10-3077 msvc-6.00-9782 msvc-6.00-8168 msvc-6.00-8447 msvc-6.00-8966 msvc-6.00-9044 dxsdk-8.1 icl-4.0 icl-4.5 icl-5.0.1 icl-6.0.078 icl-8.0.046 icl-9.0.022 directmusic-5.3.1.904)
 
 die() { echo "toolchain: $*" >&2; exit 1; }
 
@@ -246,6 +254,77 @@ build_9044() {
         [ -f "$x/${f%%:*}" ] || die "the Processor Pack has no ${f%%:*}"
         cp "$x/${f%%:*}" "$out/INCLUDE/${f#*:}"
     done
+    chmod -R u+w "$out"
+    rm -rf "$x"
+}
+
+# Visual C++ .NET 2003 (cl/c2 13.10.3077, link 7.10.3077): the command-line
+# tools, headers and libraries a VS.NET 2003 install puts in Vc7/, laid out
+#   bin/  include/  lib/  atlmfc/include/  atlmfc/lib/
+#   PlatformSDK/include/  PlatformSDK/lib/
+# with the PDB writer (mspdb71.dll, msobj71.dll) beside cl.exe, and the
+# C/C++ runtime DLLs the tools run on (msvcr71.dll, msvcp71.dll, which setup
+# puts in system32): with Wine's own, the C++ front end never finishes. Most of Vc7/
+# lies uncompressed on the discs (Disc 2 adds the MFC DLL import libraries,
+# mfc71.lib and its kin, and msobj71.dll); the Platform SDK that setup installs under
+# Vc7/PlatformSDK is in merge-module cabinets stored inside vs_setup.msi,
+# which msi.py maps to their install paths. Names are as installed; the
+# Platform SDK's directories, which the package spells both Include and
+# include, are lower-cased.
+VC71_BIN=(cl.exe c1.dll c1xx.dll c2.dll link.exe lib.exe ml.exe rc.exe rcdll.dll
+          cvtres.exe dumpbin.exe editbin.exe nmake.exe undname.exe bscmake.exe atlprov.dll)
+iso_raw2448() {
+    # A raw image of 2448-byte sectors (2352 + subchannel) -> 2048-byte ISO.
+    python3 -I -c '
+import sys
+with open(sys.argv[1], "rb") as f, open(sys.argv[2], "wb") as o:
+    while True:
+        s = f.read(2448)
+        if not s:
+            break
+        o.write(s[16:2064] if s[15] == 1 else s[24:2072])
+' "$1" "$2"
+}
+build_7103077() {
+    local out="$1" x="$WORK/vs71" vc='Program Files/Microsoft Visual Studio .NET 2003'
+    local f key cab path rel top
+    fetch VSPROD1.7z "$VS71D1_URL" "$VS71D1_SHA"
+    fetch VSPROD2.iso "$VS71D2_URL" "$VS71D2_SHA"
+    mkdir -p "$x/d1" "$x/d2" "$x/msi" "$x/cab" "$out/bin" "$out/PlatformSDK"
+    7z x -y -o"$x" "$DL/VSPROD1.7z" '*/image/VSPROD1.mdf' >/dev/null
+    iso_raw2448 "$x"/*/image/VSPROD1.mdf "$x/d1.iso"
+    rm -rf "$x"/2003-05_*
+    7z x -y -o"$x/d1" "$x/d1.iso" "$vc/Vc7/include" "$vc/Vc7/lib" "$vc/Vc7/bin" \
+        "$vc/Vc7/atlmfc/include" "$vc/Vc7/atlmfc/lib" \
+        "$vc/Common7/IDE/mspdb71.dll" Win/System/msvcr71.dll Win/System/msvcp71.dll \
+        vs_setup.msi >/dev/null
+    7z x -y -o"$x/d2" "$DL/VSPROD2.iso" "$vc/Vc7/atlmfc/lib" "$vc/Common7/IDE/msobj71.dll" >/dev/null
+    for f in "${VC71_BIN[@]}"; do
+        [ -f "$x/d1/$vc/Vc7/bin/$f" ] || die "Disc 1 has no Vc7/bin/$f"
+        cp "$x/d1/$vc/Vc7/bin/$f" "$out/bin/"
+    done
+    cp "$x/d1/$vc/Common7/IDE/mspdb71.dll" "$x/d2/$vc/Common7/IDE/msobj71.dll" \
+       "$x/d1/Win/System/msvcr71.dll" "$x/d1/Win/System/msvcp71.dll" "$out/bin/"
+    mv "$x/d1/$vc/Vc7/include" "$x/d1/$vc/Vc7/lib" "$x/d1/$vc/Vc7/atlmfc" "$out/"
+    cp -a "$x/d2/$vc/Vc7/atlmfc/lib/." "$out/atlmfc/lib/"
+    7z x -y -o"$x/msi" "$x/d1/vs_setup.msi" >/dev/null
+    python3 -I "$TC/msi.py" "$x/msi" >"$x/files"
+    while IFS=$'\t' read -r key cab path; do
+        case "${path,,}" in
+            "${vc,,}/vc7/platformsdk/include/"*|"${vc,,}/vc7/platformsdk/lib/"*) ;;
+            *) continue ;;
+        esac
+        [ -n "$cab" ] || die "PlatformSDK file $path is not in a cabinet"
+        if [ ! -d "$x/cab/$cab" ]; then
+            mkdir -p "$x/cab/$cab"
+            cabextract -q -d "$x/cab/$cab" "$x/msi/$cab"
+        fi
+        rel="${path:$(( ${#vc} + 17 ))}"          # past .../Vc7/PlatformSDK/
+        top="${rel%%/*}"
+        rel="${top,,}/${rel#*/}"
+        mkdir -p "$out/PlatformSDK/$(dirname "$rel")"
+        cp "$x/cab/$cab/$key" "$out/PlatformSDK/$rel"
+    done <"$x/files"
     chmod -R u+w "$out"
     rm -rf "$x"
 }
@@ -467,6 +546,7 @@ build() {
     echo "== $name"
     rm -rf "$tmp"
     case "$name" in
+        msvc-7.10-3077) build_7103077 "$tmp" ;;
         msvc-6.00-9782) build_9782 "$tmp" ;;
         msvc-6.00-8168) build_8168 "$tmp" ;;
         msvc-6.00-8447) build_8447 "$tmp" ;;
@@ -494,7 +574,7 @@ for a in "$@"; do
     case "$a" in
         --force) FORCE=1 ;;
         -h|--help) sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
-        msvc-6.00-9782|msvc-6.00-8168|msvc-6.00-8447|msvc-6.00-8966|msvc-6.00-9044|dxsdk-8.1|icl-4.0|icl-4.5|icl-5.0.1|icl-6.0.078|icl-8.0.046|icl-9.0.022|directmusic-5.3.1.904)
+        msvc-7.10-3077|msvc-6.00-9782|msvc-6.00-8168|msvc-6.00-8447|msvc-6.00-8966|msvc-6.00-9044|dxsdk-8.1|icl-4.0|icl-4.5|icl-5.0.1|icl-6.0.078|icl-8.0.046|icl-9.0.022|directmusic-5.3.1.904)
             targets+=("$a") ;;
         *) die "unknown argument: $a (try --help)" ;;
     esac

@@ -14,13 +14,14 @@ make shell  # then: bash toolchain/fetch.sh icl-4.0      (just one tree)
 Each download is checked against a pinned SHA-256, and each finished tree
 against a digest of every file in it, so the result is byte-for-byte the
 toolchain this source was matched with. A tree that is already present and
-verified is left alone. The downloads (about 2.7 GB) are kept in
+verified is left alone. The downloads (about 3.5 GB) are kept in
 `toolchain/downloads/`, so a rerun fetches nothing; delete that directory
 once the trees are built if you want the space back. `make` checks that the
 four compiler executables exist before it starts.
 
 | Directory | What | Used for | Size |
 |---|---|---|---|
+| `msvc-7.10-3077/` | Microsoft Visual C++ .NET 2003 (7.1) command-line tools: `bin/` (`cl.exe`, back end `c2.dll` 13.10.3077, `link.exe` 7.10.3077, `lib.exe`, `ml.exe`, `rc.exe`, the PDB writer and the `msvcr71`/`msvcp71` DLLs they run on), `include/`, `lib/` (CRT), `atlmfc/` (ATL 7.1, MFC 7.1 static and DLL libraries) and `PlatformSDK/` (`include/`, `lib/`) | Contract J.A.C.K.: every Monolith binary of it (their Rich headers name 13.10.3077 throughout) | 235 MB |
 | `msvc-6.00-9782/` | Microsoft Visual C++ 6.0 SP6 command-line tools, portable layout: `VC98/` (`Bin/CL.EXE`, back end `C2.DLL` 12.00.9782, `LINK.EXE`, `LIB.EXE`, headers, CRT and MFC libraries) and `Common/MSDev98/Bin/` (`RC.EXE`) | the default compiler (game DLLs, `NOLF.exe`, `sres.dll`), and the linker, librarian and resource compiler for everything but `ltmsg.dll` | 176 MB |
 | `msvc-6.00-8966/` | Visual C++ 6.0 SP5 compiler (`BIN/cl.exe` 12.00.8804, back end `c2.dll` 12.00.8966), linker and librarian, with its own `INCLUDE/`, `LIB/`, `MFC/` | NOLF2's game DLLs, launcher and dedicated server (their Rich headers name C++ build 8966) | 132 MB |
 | `msvc-6.00-8447/` | Visual C++ 6.0 SP3 compiler (`BIN/cl.exe`, back end `c2.dll` 12.00.8447) with its own `INCLUDE/`, `LIB/`, `MFC/` | `server.dll`, `lithtech.exe`, the lithshared libraries (`CL_REV=8447`); the C runtime (`libcmt.lib`) the engine images link | 131 MB |
@@ -35,7 +36,7 @@ four compiler executables exist before it starts.
 | `icl-9.0.022/` | Intel C++ Compiler 9.0 (build 20050809Z), same layout | candidates for testing, not used by the build | 37 MB |
 | `directmusic-5.3.1.904/` | Microsoft DirectMusic from DirectX 9.0c: `dmband`, `dmcompos`, `dmime`, `dmloader`, `dmscript`, `dmstyle`, `dmsynth`, `dmusic`, `dswave`.dll, with `SHA256SUMS`. File versions 5.3.1.904 (`dmime`, `dmusic`) and 5.3.0.900 (the rest); the directory is named after the newest | not a compiler: the modern build installs them in the game directory, renamed `ms_<name>.dll`, so the music plays under Wine and Proton without winetricks (nolfsrc `src/modern/directmusic/README.md`) | 0.7 MB |
 
-About 845 MB in all.
+About 1,080 MB in all.
 
 Which revision built which retail binary, and the evidence for each, is in
 [`COMPILERS.md`](COMPILERS.md).
@@ -50,6 +51,7 @@ different (though working) code.
 
 | Tree | Source |
 |---|---|
+| `msvc-7.10-3077` | Visual Studio .NET 2003 Professional, May 2003: Disc 1 ([archive.org](https://archive.org/details/X09-46364), a 7z of a raw MDF image; `fetch.sh` reads its 2,448-byte sectors as a plain ISO) and Disc 2 ([archive.org](https://archive.org/details/microsoft-visual-studio-.-net-2003-professional-disc-2), an ISO). `Vc7/{bin,include,lib,atlmfc}` lie uncompressed on the discs (Disc 2 adds `mfc71.lib` and the other MFC DLL import libraries, and `msobj71.dll`); `mspdb71.dll` is `Common7/IDE`'s, `msvcr71.dll` and `msvcp71.dll` `Win/System`'s. The Platform SDK setup installs under `Vc7/PlatformSDK` comes from the merge-module cabinets stored in `vs_setup.msi`, placed by `msi.py`; its `Include`/`include` and `Lib`/`lib` directories are lower-cased. Only the tools the build needs are kept from `bin/`. Under Wine, the C++ front end needs the native runtime DLLs beside it: with Wine's builtin `msvcp71` it never finishes. |
 | `msvc-6.00-8168` | `VC98/{BIN,INCLUDE,LIB,MFC/INCLUDE,MFC/LIB}` and `COMMON/MSDEV98/BIN/MSPDB60.DLL` from Visual Studio 6.0 Enterprise, Disc 1 ([archive.org](https://archive.org/details/visualstudiov60enterpriseedition_199807)); names lower-cased, and the 17 `INCLUDE/` files the disc keeps under 8.3 names (`xception`, `algrithm`, `evntcpts.h`, ...) given the long names VC6 setup installs them as (`exception`, `algorithm`, `eventcpts.h`, ...). |
 | `msvc-6.00-8447` | The 8168 tree with Service Pack 3's English `vc98/` files laid over it ([archive.org](https://archive.org/details/msvs6sp3)). The pressed SP3 disc lacks the new back end: it comes from the Internet/Core edition of SP3 on the August 1999 TechNet disc ([archive.org](https://archive.org/details/ms-technet-tnsb9908)), whose `msvcep.dll` is what SP3 setup installs as `c2.dll`. |
 | `msvc-6.00-8966` | The 8447 tree (copied when it is already here and verified, built otherwise) with Visual Studio 6.0 Service Pack 5's `vc98/` files laid over it, from the cumulative SP5 package ([archive.org](https://archive.org/details/vs6sp5)): `VS6sp51.cab` and the cabinets it continues into. Like the TechNet SP3, the package carries its new back end beside the cabinets as `msvcep.dll`, installed as `c2.dll`. Its compiler, linker, CRT and MFC files match the hashes [second-impressions/msvc-compilers](https://github.com/second-impressions/msvc-compilers) checks its 8966 image against. |
