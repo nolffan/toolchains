@@ -59,9 +59,20 @@ quickest way to confirm that a `CL_REV` override actually took effect.
 | `lithtech.exe` | C 8168 ×155 · C++ 8168 ×8 · C++ **8447** ×155 · C 8799 ×1 | **8447, /O2** (a few files with their own flags) | **Proven**: `/O2` matches 479 functions where `/O1` matches 37. Switching the whole shared source set from 8168 to 8447 matched five more functions, and rebuilding each shared file at 8168 one at a time moved the total for none of them. One stray C object wants 8799, which nobody has. |
 | `d3d.ren` | C 8168 ×109 · C++ 8168 ×8 · C++ 8447 ×3 | **Intel C/C++ 4.0**, per-file flag groups | **Proven** (below). The Microsoft rows are the static CRT and linked-in library code: a Rich header only records Microsoft tools. |
 | `NOLF.exe` | C **8797** ×138 · C++ 8797 ×10 · C++ **8569** ×42 · C++ 8168 ×4 · C++ 8799 ×10 | `msvc-6.00-9782`; the right ones are **not held** | The launcher wants post-SP4 builds (8797, 8799; 8569 is the MFC) that nobody has. Every revision tried -- 9782, 8168, 8447, 8966 -- matches exactly the same launcher functions, so none of them is secretly the right one and the remaining nears are not a flag question either. |
-| `ltmsg.dll` | C 8168 ×23 · C++ 8168 ×2 | `msvc-6.00-9782` | Resources only around an empty `DllMain`: all eight resources are byte-identical (`tools/rsrcdiff.py`), the code is almost entirely static CRT, and ours comes from a different CRT build, so the file as a whole does not match. Easy to misread: run `richhdr.py` on *our* `ltmsg.dll` and it says 9782. |
+| `ltmsg.dll` | C 8168 ×23 · C++ 8168 ×2 | **`msvc-6.00-8168`**: compiler, `libcmt.lib` and linker | **Proven**: every byte but four is the retail file's. Its resources, its CRT and the C runtime's own default `DllMain` (no `DllMain` of Monolith's: the extra C object), linked by VC6's first linker, whose `cvtres.exe` 5.00.1720 is the Rich header's "masm 1720" row (later linkers bring 5.00.1736, "1735"). Left over: the time stamp, and two `KERNEL32` imports (`HeapCreate`, `GetCommandLineA`) in each other's IAT slots, which no held linker, library or link order reproduces. |
 | lithshared libraries | (no Rich header; `@comp.id` on every object: **8447**) | **8447** (`build/libs.sh`) | **Proven exactly**, per object, by `@comp.id`. |
 | `CShell.dll` / `Object.lto` / `CRes.dll` | (not recovered) | `msvc-6.00-9782` | Built from Monolith's released source; not yet scored by `make progress`. |
+
+## The C runtime
+
+Code of Monolith's is only half of an image: the static C runtime is the
+rest, and the Rich header names its build too (the C rows, mostly).
+
+| Binary | Its `libcmt.lib` (C objects) | Linked here with |
+|---|---|---|
+| `lithtech.exe`, `server.dll`, `d3d.ren` | 8168 | `msvc-6.00-8447`'s (SP3: 8168 objects, without SP6's `__MSVCRT_HEAP_SELECT` heap selection and its `GetVersionExA` / `GetEnvironmentVariableA` imports); `d3d.ren` Intel 4.0's `libmmt.lib` first, as the retail one did (its `floor.c`, `modf.c`, `support.c` SCCS idents) |
+| `ltmsg.dll` | 8168 | `msvc-6.00-8168`'s |
+| `CShell.dll`, `Object.lto`, `NOLF.exe`, `NolfServ.exe` | **8797** (likely SP4), not held | `msvc-6.00-9782`'s, except the old iostream library, `libcimt.lib` (8168 in every held tree but SP6's, which adds an `__InitLock` class): `msvc-6.00-8168`'s. Wanted: `toolchains/README.md` |
 
 ## Notes
 

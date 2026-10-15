@@ -21,10 +21,10 @@ four compiler executables exist before it starts.
 
 | Directory | What | Used for | Size |
 |---|---|---|---|
-| `msvc-6.00-9782/` | Microsoft Visual C++ 6.0 SP6 command-line tools, portable layout: `VC98/` (`Bin/CL.EXE`, back end `C2.DLL` 12.00.9782, `LINK.EXE`, `LIB.EXE`, headers, CRT and MFC libraries) and `Common/MSDev98/Bin/` (`RC.EXE`) | the default compiler (game DLLs, `NOLF.exe`, `ltmsg.dll`, `sres.dll`), and the linker, librarian and resource compiler for everything | 176 MB |
+| `msvc-6.00-9782/` | Microsoft Visual C++ 6.0 SP6 command-line tools, portable layout: `VC98/` (`Bin/CL.EXE`, back end `C2.DLL` 12.00.9782, `LINK.EXE`, `LIB.EXE`, headers, CRT and MFC libraries) and `Common/MSDev98/Bin/` (`RC.EXE`) | the default compiler (game DLLs, `NOLF.exe`, `sres.dll`), and the linker, librarian and resource compiler for everything but `ltmsg.dll` | 176 MB |
 | `msvc-6.00-8966/` | Visual C++ 6.0 SP5 compiler (`BIN/cl.exe` 12.00.8804, back end `c2.dll` 12.00.8966), linker and librarian, with its own `INCLUDE/`, `LIB/`, `MFC/` | NOLF2's game DLLs, launcher and dedicated server (their Rich headers name C++ build 8966) | 132 MB |
-| `msvc-6.00-8447/` | Visual C++ 6.0 SP3 compiler (`BIN/cl.exe`, back end `c2.dll` 12.00.8447) with its own `INCLUDE/`, `LIB/`, `MFC/` | `server.dll`, `lithtech.exe`, the lithshared libraries (`CL_REV=8447`) | 131 MB |
-| `msvc-6.00-8168/` | Visual C++ 6.0 RTM compiler (`BIN/cl.exe`, back end 12.00.8168) with its own `INCLUDE/`, `LIB/`, `MFC/` | headers and libraries for the Intel compiler (`d3d.ren`) | 131 MB |
+| `msvc-6.00-8447/` | Visual C++ 6.0 SP3 compiler (`BIN/cl.exe`, back end `c2.dll` 12.00.8447) with its own `INCLUDE/`, `LIB/`, `MFC/` | `server.dll`, `lithtech.exe`, the lithshared libraries (`CL_REV=8447`); the C runtime (`libcmt.lib`) the engine images link | 131 MB |
+| `msvc-6.00-8168/` | Visual C++ 6.0 RTM compiler (`BIN/cl.exe`, back end 12.00.8168) with its own `INCLUDE/`, `LIB/`, `MFC/` | headers and libraries for the Intel compiler (`d3d.ren`); all of `ltmsg.dll` (compiler, `libcmt.lib`, `link.exe` with its `cvtres.exe` 5.00.1720); the old iostream library (`libcimt.lib`) the game DLLs and `NolfServ.exe` link | 131 MB |
 | `dxsdk-8.1/` | Microsoft DirectX 8.1 SDK (October 2001): `include/`, `lib/` and `DXReadme.txt` | NOLF2's launcher (`d3d8.h`, `d3d8.lib`) and the DirectInput 8 headers of the game DLLs | 17 MB |
 | `icl-4.0/` | Intel C/C++ Compiler 4.0 for Windows (build 99100): `BIN/icl.exe` and its companions, `INCLUDE/`, `LIB/` | `d3d.ren` | 5.4 MB |
 | `icl-4.5/` | Intel C/C++ Compiler 4.5 (build 00015), same layout | candidates for testing, not used by the build | 6.4 MB |
@@ -73,6 +73,23 @@ If you have one -- original media, an evaluation release, or an installed
 copy -- please open an issue on this repository. Matching the
 binaries needs the compiler itself (`icl.exe` and its companions), its
 headers and its libraries.
+
+## Wanted: the C runtime of Visual C++ 6.0 SP4
+
+The game DLLs (`CShell.dll`, `Object.lto`), `NOLF.exe` and `NolfServ.exe`
+link a static C runtime (`libcmt.lib`) whose C objects the retail images'
+Rich headers count as cl **12.00.8797** (`CShell.dll`: ×152, `Object.lto`:
+×124, `NOLF.exe`: ×138, `NolfServ.exe`: ×158). No tree here has it:
+`libcmt.lib`'s objects are 8168 in `msvc-6.00-8168` and `msvc-6.00-8447`,
+8047 in `msvc-6.00-8966` and 9782 in `msvc-6.00-9782` (`tools/compid.py`
+reads them). Build 8797 falls between SP3 (8447) and SP5 (8966/8047), so
+the likely source is Visual C++ 6.0 **Service Pack 4**'s `VC98/LIB/libcmt.lib`
+(not yet confirmed: no copy of SP4 has been examined). Until it is found
+these images link SP6's (`msvc-6.00-9782`), which differs from the retail
+one in the runtime's own code and data but in none of Monolith's.
+
+If you have Visual C++ 6.0 SP4 (`vs6sp4.exe`, or its `vc98` files), please
+open an issue on this repository.
 
 ## Thanks
 
