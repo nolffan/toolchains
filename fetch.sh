@@ -2,7 +2,7 @@
 # Assemble toolchain/ from public copies of the original compiler media.
 #
 #   bash toolchain/fetch.sh [--force] [msvc-6.00-9782] [msvc-6.00-8168] [msvc-6.00-8447]
-#                           [msvc-6.00-8966] [dxsdk-8.1] [icl-4.0] [icl-4.5] [icl-5.0.1] [icl-6.0.078]
+#                           [msvc-6.00-8966] [msvc-6.00-9044] [dxsdk-8.1] [icl-4.0] [icl-4.5] [icl-5.0.1] [icl-6.0.078]
 #                           [icl-8.0.046] [icl-9.0.022] [directmusic-5.3.1.904]
 #
 # `make toolchain` runs this in the build container, which has every tool it
@@ -31,6 +31,8 @@ TECHNET_URL='https://archive.org/download/ms-technet-tnsb9908/TNSB9908.iso'
 TECHNET_SHA=f3eefbd0b7d7958a44ef63c2bb28bcf75ef8d5adcd2e65082f54fb399004a928
 VS6SP5_URL='https://archive.org/download/vs6sp5/vs6sp5.exe'
 VS6SP5_SHA=10a834041223ad21181c0e87c0a90930d976498556af2e8f959a044101e6a604
+VCPP5_URL='https://archive.org/download/vcpp5/vcpp5.exe'
+VCPP5_SHA=96817df1bb0cb58e5b1d0fbcc5b993a63548182add1fbff66365401203ecfb6c
 DXSDK81_URL='https://archive.org/download/dx81sdk_full/dx81sdk_full.exe'
 DXSDK81_SHA=73f6791e0ae7f8a1d74f71d8ebe517a79c0cbf03fd344424696fd7a3816d2d02
 # The February 2010 DirectX End-User Runtime redistributable (the one
@@ -72,6 +74,7 @@ declare -A TREE_SHA=(
     [msvc-6.00-8168]=17b81cd04ffa07047450a2f6c706f51f76b1610f30835e12e25d0b742b2c986a
     [msvc-6.00-8447]=a395f322bc376675f232fdf54d127b38f40383571715e968ecf7343bebf2890e
     [msvc-6.00-8966]=43aa462a12e7dfc72055ee8253a11a995d8c092f61a2ccc2985bb1150d39a3ca
+    [msvc-6.00-9044]=41ba040bfa329c9d33d780b38cf99b2b976e05391961e702ff879c247ec59793
     [dxsdk-8.1]=f086a340ad92e84b0e28325088c47247ae4048467e5cee6208cb396028c17df8
     [icl-4.0]=0355308ba40347b1ec7d75ffc46736735b5230a25c27aa9e5f4f6e399a6bb8f7
     [icl-4.5]=c7e45803afa919a8b256e6050c92cb1021e98c11b59e416e72f05a25126fdbab
@@ -81,7 +84,7 @@ declare -A TREE_SHA=(
     [icl-9.0.022]=161d54d0cec4b79dbc0022763f6bc00df4d2bf314679aa61bef78c2d130a991c
     [directmusic-5.3.1.904]=f9ebf333a683b7c9e7df7b94ab7351a38a8f5e1eab72468899d6be199623a1be
 )
-ALL=(msvc-6.00-9782 msvc-6.00-8168 msvc-6.00-8447 msvc-6.00-8966 dxsdk-8.1 icl-4.0 icl-4.5 icl-5.0.1 icl-6.0.078 icl-8.0.046 icl-9.0.022 directmusic-5.3.1.904)
+ALL=(msvc-6.00-9782 msvc-6.00-8168 msvc-6.00-8447 msvc-6.00-8966 msvc-6.00-9044 dxsdk-8.1 icl-4.0 icl-4.5 icl-5.0.1 icl-6.0.078 icl-8.0.046 icl-9.0.022 directmusic-5.3.1.904)
 
 die() { echo "toolchain: $*" >&2; exit 1; }
 
@@ -213,6 +216,36 @@ build_8966() {
     done
     long_names "$out/INCLUDE"
     cp "$x/pkg/msvcep.dll" "$out/BIN/c2.dll"
+    chmod -R u+w "$out"
+    rm -rf "$x"
+}
+
+# VC6 Processor Pack (back end c2 build 9044, file version 13.00.9044): the
+# SP5 tree with the pack's VC98 files laid over it where its vcpp.inf puts
+# them -- c2.dll and MASM 6.15 (ml.exe, h2inc.exe) in BIN/, the SSE/SSE2/3DNow!
+# intrinsic headers in INCLUDE/, two of them renamed from their 8.3 names. Its
+# CRT source (align.c), samples and documentation are left out. A verified
+# SP5 tree already here is copied rather than built again.
+build_9044() {
+    local out="$1" x="$WORK/vcpp" f
+    if [ -d "$TC/msvc-6.00-8966" ] && [ "$(tree_sha "$TC/msvc-6.00-8966")" = "${TREE_SHA[msvc-6.00-8966]}" ]; then
+        cp -a "$TC/msvc-6.00-8966" "$out"
+    else
+        build_8966 "$out"
+    fi
+    fetch vcpp5.exe "$VCPP5_URL" "$VCPP5_SHA"
+    mkdir -p "$x"
+    cabextract -q -d "$x" "$DL/vcpp5.exe"
+    chmod -R u+w "$x"
+    for f in c2.dll ml.exe ml.err h2inc.exe h2inc.err; do
+        [ -f "$x/$f" ] || die "the Processor Pack has no $f"
+        cp "$x/$f" "$out/BIN/"
+    done
+    for f in dvec.h fpieee.h fvec.h ivec.h malloc.h mm3dnow.h mmintrin.h \
+             emmint_1.h:emmintrin.h xmmint_1.h:xmmintrin.h; do
+        [ -f "$x/${f%%:*}" ] || die "the Processor Pack has no ${f%%:*}"
+        cp "$x/${f%%:*}" "$out/INCLUDE/${f#*:}"
+    done
     chmod -R u+w "$out"
     rm -rf "$x"
 }
@@ -438,6 +471,7 @@ build() {
         msvc-6.00-8168) build_8168 "$tmp" ;;
         msvc-6.00-8447) build_8447 "$tmp" ;;
         msvc-6.00-8966) build_8966 "$tmp" ;;
+        msvc-6.00-9044) build_9044 "$tmp" ;;
         dxsdk-8.1)      build_dxsdk81 "$tmp" ;;
         icl-4.0)        build_icl4 "$tmp" ;;
         icl-4.5)        build_icl45 "$tmp" ;;
@@ -460,7 +494,7 @@ for a in "$@"; do
     case "$a" in
         --force) FORCE=1 ;;
         -h|--help) sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
-        msvc-6.00-9782|msvc-6.00-8168|msvc-6.00-8447|msvc-6.00-8966|dxsdk-8.1|icl-4.0|icl-4.5|icl-5.0.1|icl-6.0.078|icl-8.0.046|icl-9.0.022|directmusic-5.3.1.904)
+        msvc-6.00-9782|msvc-6.00-8168|msvc-6.00-8447|msvc-6.00-8966|msvc-6.00-9044|dxsdk-8.1|icl-4.0|icl-4.5|icl-5.0.1|icl-6.0.078|icl-8.0.046|icl-9.0.022|directmusic-5.3.1.904)
             targets+=("$a") ;;
         *) die "unknown argument: $a (try --help)" ;;
     esac

@@ -25,6 +25,7 @@ four compiler executables exist before it starts.
 | `msvc-6.00-8966/` | Visual C++ 6.0 SP5 compiler (`BIN/cl.exe` 12.00.8804, back end `c2.dll` 12.00.8966), linker and librarian, with its own `INCLUDE/`, `LIB/`, `MFC/` | NOLF2's game DLLs, launcher and dedicated server (their Rich headers name C++ build 8966) | 132 MB |
 | `msvc-6.00-8447/` | Visual C++ 6.0 SP3 compiler (`BIN/cl.exe`, back end `c2.dll` 12.00.8447) with its own `INCLUDE/`, `LIB/`, `MFC/` | `server.dll`, `lithtech.exe`, the lithshared libraries (`CL_REV=8447`); the C runtime (`libcmt.lib`) the engine images link | 131 MB |
 | `msvc-6.00-8168/` | Visual C++ 6.0 RTM compiler (`BIN/cl.exe`, back end 12.00.8168) with its own `INCLUDE/`, `LIB/`, `MFC/` | headers and libraries for the Intel compiler (`d3d.ren`); all of `ltmsg.dll` (compiler, `libcmt.lib`, `link.exe` with its `cvtres.exe` 5.00.1720); the old iostream library (`libcimt.lib`) the game DLLs and `NolfServ.exe` link | 131 MB |
+| `msvc-6.00-9044/` | Visual C++ 6.0 SP5 with the Processor Pack: the `msvc-6.00-8966` tree with the pack's back end (`BIN/c2.dll` 13.00.9044, which emits build 9044), MASM 6.15 (`BIN/ml.exe`, `h2inc.exe`) and the SSE/SSE2/3DNow! intrinsic headers (`xmmintrin.h`, `emmintrin.h`, `mm3dnow.h`, ...) | candidates for testing, not used by the build | 133 MB |
 | `dxsdk-8.1/` | Microsoft DirectX 8.1 SDK (October 2001): `include/`, `lib/` and `DXReadme.txt` | NOLF2's launcher (`d3d8.h`, `d3d8.lib`) and the DirectInput 8 headers of the game DLLs | 17 MB |
 | `icl-4.0/` | Intel C/C++ Compiler 4.0 for Windows (build 99100): `BIN/icl.exe` and its companions, `INCLUDE/`, `LIB/` | `d3d.ren` | 5.4 MB |
 | `icl-4.5/` | Intel C/C++ Compiler 4.5 (build 00015), same layout | candidates for testing, not used by the build | 6.4 MB |
@@ -34,7 +35,7 @@ four compiler executables exist before it starts.
 | `icl-9.0.022/` | Intel C++ Compiler 9.0 (build 20050809Z), same layout | candidates for testing, not used by the build | 37 MB |
 | `directmusic-5.3.1.904/` | Microsoft DirectMusic from DirectX 9.0c: `dmband`, `dmcompos`, `dmime`, `dmloader`, `dmscript`, `dmstyle`, `dmsynth`, `dmusic`, `dswave`.dll, with `SHA256SUMS`. File versions 5.3.1.904 (`dmime`, `dmusic`) and 5.3.0.900 (the rest); the directory is named after the newest | not a compiler: the modern build installs them in the game directory, renamed `ms_<name>.dll`, so the music plays under Wine and Proton without winetricks (nolfsrc `src/modern/directmusic/README.md`) | 0.7 MB |
 
-About 710 MB in all.
+About 845 MB in all.
 
 Which revision built which retail binary, and the evidence for each, is in
 [`COMPILERS.md`](COMPILERS.md).

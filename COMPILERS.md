@@ -13,6 +13,8 @@ testimony.
 |---|---|---|---|
 | `msvc-6.00-8168/` | 12.00.8168 | **12.00.8168** | VC6 RTM |
 | `msvc-6.00-8447/` | 12.00.8168 | **12.00.8447** | VC6 SP3 |
+| `msvc-6.00-8966/` | 12.00.8804 | **12.00.8966** | VC6 SP5 |
+| `msvc-6.00-9044/` | 12.00.8804 | **13.00.9044** (Rich: build 9044) | VC6 SP5 + Processor Pack |
 | `msvc-6.00-9782/` | 12.00.8804 | **12.00.9782** | VC6 SP6 (the default) |
 | `icl-4.0/` | Intel C/C++ 4.0 build 99100 | -- | 1999 |
 | `icl-4.5/` | Intel C/C++ 4.5 build 00015 | -- | 2000 |
@@ -29,9 +31,10 @@ selects with `CL_REV=8168|8447` (unset: `msvc-6.00-9782`); `build/engine.sh` pin
 libraries to 8447, and `d3d.ren` is built with `run_icl`. `toolchain/README.md`
 says where each tree comes from.
 
-A Processor-Pack-era back end (12.00.8966) was also tried against the engine
-binaries and the launcher and matched nothing the held revisions do not; it
-is not part of this toolchain.
+SP5's back end (`msvc-6.00-8966`) was also tried against the engine
+binaries and the launcher and matched nothing the held revisions do not.
+The Processor Pack's (`msvc-6.00-9044`, a 13.00 file version on a build-9044
+back end) has not been tried against them yet.
 
 ## A second, exact oracle: `@comp.id`
 
