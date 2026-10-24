@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Assemble toolchain/ from public copies of the original compiler media.
 #
-#   bash toolchain/fetch.sh [--force] [msvc-7.10-3077] [msvc-6.00-9782] [msvc-6.00-8168] [msvc-6.00-8447]
+#   bash toolchain/fetch.sh [--force] [msvc-5.00-7303] [msvc-7.10-3077] [msvc-6.00-9782] [msvc-6.00-8168] [msvc-6.00-8447]
 #                           [msvc-6.00-8966] [msvc-6.00-9044] [dxsdk-8.1] [icl-4.0] [icl-4.5] [icl-5.0.1] [icl-6.0.078]
 #                           [icl-8.0.046] [icl-9.0.022] [directmusic-5.3.1.904]
 #
@@ -31,6 +31,12 @@ TECHNET_URL='https://archive.org/download/ms-technet-tnsb9908/TNSB9908.iso'
 TECHNET_SHA=f3eefbd0b7d7958a44ef63c2bb28bcf75ef8d5adcd2e65082f54fb399004a928
 VS6SP5_URL='https://archive.org/download/vs6sp5/vs6sp5.exe'
 VS6SP5_SHA=10a834041223ad21181c0e87c0a90930d976498556af2e8f959a044101e6a604
+# Visual C++ 5.0 Enterprise Edition CD 1 (1997) and Visual Studio 97 Service
+# Pack 3 (December 1997), for LithRez 1.00 (1998, link 5.10.7303).
+VC50D1_URL='https://archive.org/download/microsoft-visual-cpp-5.0-enterprise/microsoft-visual-c%2B%2B-5.0-enterprise-edition-cd1.iso'
+VC50D1_SHA=b570a6733f4bd50af4b01594c063294d0808ac2708d66daa34ce176c673c981a
+VS97SP3_URL='https://archive.org/download/vs97sp3/vs97sp3.zip'
+VS97SP3_SHA=bd47cf619297b3d4b27b5a5fe60d9c0df09b1519e0e7e2c8ea8a09cf98cf882c
 VCPP5_URL='https://archive.org/download/vcpp5/vcpp5.exe'
 VCPP5_SHA=96817df1bb0cb58e5b1d0fbcc5b993a63548182add1fbff66365401203ecfb6c
 # Visual Studio .NET 2003 Professional (May 2003), the two discs as archive.org
@@ -77,6 +83,7 @@ MSVC600_URL="https://codeload.github.com/itsmattkc/MSVC600/tar.gz/$MSVC600_COMMI
 
 # --- the finished trees: SHA-256 over `sha256sum` of every file, sorted -----
 declare -A TREE_SHA=(
+    [msvc-5.00-7303]=181bee181a6da9391e3ed02e466db83b038db242642ef53f46e094bc7f340567
     [msvc-7.10-3077]=566e648d62eca82c7a035a2eb3cdcc8467480a02e4d905784dfb55eda5d7ce6f
     [msvc-6.00-9782]=78ff2ccc2c2c5f9e38cb0155811672b0a4de56f1e673ef779442ce4e89d93edb
     [msvc-6.00-8168]=17b81cd04ffa07047450a2f6c706f51f76b1610f30835e12e25d0b742b2c986a
@@ -92,7 +99,7 @@ declare -A TREE_SHA=(
     [icl-9.0.022]=161d54d0cec4b79dbc0022763f6bc00df4d2bf314679aa61bef78c2d130a991c
     [directmusic-5.3.1.904]=f9ebf333a683b7c9e7df7b94ab7351a38a8f5e1eab72468899d6be199623a1be
 )
-ALL=(msvc-7.10-3077 msvc-6.00-9782 msvc-6.00-8168 msvc-6.00-8447 msvc-6.00-8966 msvc-6.00-9044 dxsdk-8.1 icl-4.0 icl-4.5 icl-5.0.1 icl-6.0.078 icl-8.0.046 icl-9.0.022 directmusic-5.3.1.904)
+ALL=(msvc-5.00-7303 msvc-7.10-3077 msvc-6.00-9782 msvc-6.00-8168 msvc-6.00-8447 msvc-6.00-8966 msvc-6.00-9044 dxsdk-8.1 icl-4.0 icl-4.5 icl-5.0.1 icl-6.0.078 icl-8.0.046 icl-9.0.022 directmusic-5.3.1.904)
 
 die() { echo "toolchain: $*" >&2; exit 1; }
 
@@ -151,6 +158,46 @@ long_names() {
     for p in "${INCLUDE_LONG_NAMES[@]}"; do
         [ ! -f "$1/${p%%:*}" ] || mv -f "$1/${p%%:*}" "$1/${p#*:}"
     done
+}
+
+# Visual C++ 5.0 SP3 (cl/c2 11.00.7303, link 5.10.7303): CD 1's DevStudio/VC
+# command-line tools, headers and libraries, with the PDB writer from
+# SharedIDE, Service Pack 3's English compiler and linker (VC/BIN) and its
+# shared msdis100.dll and mspdb50.dll laid over them, and msvcp50.dll (which
+# SP3's msdis100.dll needs) from VC/REDIST. SP3's cabinet set begins inside
+# vssp3_1.exe.
+build_500() {
+    local out="$1" x="$WORK/vc5" f
+    fetch vc50-cd1.iso "$VC50D1_URL" "$VC50D1_SHA"
+    fetch vs97sp3.zip "$VS97SP3_URL" "$VS97SP3_SHA"
+    mkdir -p "$x/sp3" "$out"
+    bsdtar -xf "$DL/vc50-cd1.iso" -C "$x" DEVSTUDIO/VC/BIN DEVSTUDIO/VC/INCLUDE DEVSTUDIO/VC/LIB \
+        DEVSTUDIO/SHAREDIDE/BIN/MSPDB50.DLL DEVSTUDIO/VC/REDIST/MSVCP50.DLL
+    chmod -R u+w "$x"
+    for f in BIN INCLUDE LIB; do mv "$x/DEVSTUDIO/VC/$f" "$out/$f"; done
+    cp "$x/DEVSTUDIO/SHAREDIDE/BIN/MSPDB50.DLL" "$x/DEVSTUDIO/VC/REDIST/MSVCP50.DLL" "$out/BIN/"
+    bsdtar -xf "$DL/vs97sp3.zip" -C "$x/sp3"
+    python3 - "$x/sp3/vssp3_1.exe" "$x/sp3/VSSP3_1.cab" <<'PY'
+import struct, sys
+d = open(sys.argv[1], 'rb').read()
+i = d.find(b'MSCF')
+while i >= 0:
+    n = struct.unpack_from('<I', d, i + 8)[0]
+    if 0 < n <= len(d) - i:
+        open(sys.argv[2], 'wb').write(d[i:i + n]); break
+    i = d.find(b'MSCF', i + 1)
+PY
+    for f in 2 3 4 5 6 7 8 9; do mv "$x/sp3/vssp3_$f.cab" "$x/sp3/VSSP3_$f.cab"; done
+    cabextract -q -d "$x/sp3/x" "$x/sp3/VSSP3_1.cab"
+    for f in c1.dll c1xx.dll c2.exe cvpack.exe link.exe; do
+        cp "$x/sp3/x/VS97_SP3/enu/vc/bin/$f" "$out/BIN/$(echo $f | tr a-z A-Z)"
+    done
+    for f in msdis100.dll mspdb50.dll; do
+        cp "$x/sp3/x/VS97_SP3/all/shared/bin/$f" "$out/BIN/$(echo $f | tr a-z A-Z)"
+    done
+    chmod -R u+w "$out"
+    lowercase "$out/BIN" "$out/INCLUDE" "$out/LIB"
+    rm -rf "$x"
 }
 
 # VC6 RTM (cl/c2 12.00.8168): VC98's command-line tools, headers, CRT and MFC
@@ -546,6 +593,7 @@ build() {
     echo "== $name"
     rm -rf "$tmp"
     case "$name" in
+        msvc-5.00-7303) build_500 "$tmp" ;;
         msvc-7.10-3077) build_7103077 "$tmp" ;;
         msvc-6.00-9782) build_9782 "$tmp" ;;
         msvc-6.00-8168) build_8168 "$tmp" ;;
@@ -574,7 +622,7 @@ for a in "$@"; do
     case "$a" in
         --force) FORCE=1 ;;
         -h|--help) sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
-        msvc-7.10-3077|msvc-6.00-9782|msvc-6.00-8168|msvc-6.00-8447|msvc-6.00-8966|msvc-6.00-9044|dxsdk-8.1|icl-4.0|icl-4.5|icl-5.0.1|icl-6.0.078|icl-8.0.046|icl-9.0.022|directmusic-5.3.1.904)
+        msvc-5.00-7303|msvc-7.10-3077|msvc-6.00-9782|msvc-6.00-8168|msvc-6.00-8447|msvc-6.00-8966|msvc-6.00-9044|dxsdk-8.1|icl-4.0|icl-4.5|icl-5.0.1|icl-6.0.078|icl-8.0.046|icl-9.0.022|directmusic-5.3.1.904)
             targets+=("$a") ;;
         *) die "unknown argument: $a (try --help)" ;;
     esac

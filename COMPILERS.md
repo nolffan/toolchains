@@ -11,6 +11,7 @@ testimony.
 
 | Directory | Driver banner | c2.dll (back end) | Era |
 |---|---|---|---|
+| `msvc-5.00-7303/` | 11.00.7303 (c1xx 11.00.7307) | c2.exe **11.00.7303**, link 5.10.7303 | VC5 + VS97 SP3 (lithrez.exe, TProcessor.exe: no Rich header, linker 5.10) |
 | `msvc-7.10-3077/` | 13.10.3077 | **13.10.3077** | VS.NET 2003 RTM |
 | `msvc-6.00-8168/` | 12.00.8168 | **12.00.8168** | VC6 RTM |
 | `msvc-6.00-8447/` | 12.00.8168 | **12.00.8447** | VC6 SP3 |
