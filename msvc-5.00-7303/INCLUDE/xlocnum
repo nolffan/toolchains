@@ -77,6 +77,11 @@ _PROTECTED:
 template<class _E>
 	locale::id numpunct<_E>::id;
  #define _VIRTUAL	virtual
+
+template<class _E> inline
+	bool (isdigit)(_E _C, const locale& _L)
+	{return (_USE(_L, ctype<_E>).is(ctype_base::digit, _C)); }
+
 		// TEMPLATE CLASS num_get
 template<class _E,
 	class _II = istreambuf_iterator<_E, char_traits<_E> > >
@@ -359,7 +364,7 @@ private:
 			*_P++ = '0';
 		int _Ns = 0;
 		int _Pten = 0;
-		for (; _F != _L && isdigit(*_P = _NARROW(_E, *_F));
+		for (; _F != _L && isdigit(*_P = _NARROW(_E, *_F), _Loc);
 			_Sd = true, ++_F)
 			if (_Ns < _MAX_SIG_DIG)
 				++_P, ++_Ns;
@@ -372,7 +377,7 @@ private:
 				--_Pten;
 			if (_Pten < 0)
 				*_P++ = '0', ++_Pten; }
-		for (; _F != _L && isdigit(*_P = _NARROW(_E, *_F));
+		for (; _F != _L && isdigit(*_P = _NARROW(_E, *_F), _Loc);
 			_Sd = true, ++_F)
 			if (_Ns < _MAX_SIG_DIG)
 				++_P, ++_Ns;
@@ -390,7 +395,7 @@ private:
 				;
 			if (_Sd)
 				*_P++ = '0';
-			for (; _F != _L && isdigit(*_P = _NARROW(_E, *_F));
+			for (; _F != _L && isdigit(*_P = _NARROW(_E, *_F), _Loc);
 				_Sd = true, ++_F)
 				if (_Ns < _MAX_EXP_DIG)
 					++_P, ++_Ns; }

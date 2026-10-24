@@ -1,16 +1,16 @@
 /***
 *minmax.h - familiar min & max macros
 *
-*	Copyright (c) 1985-1997, Microsoft Corporation. All rights reserved.
+*       Copyright (c) 1985-1997, Microsoft Corporation. All rights reserved.
 *
 *Purpose:
-*	Defines min and max macros.
+*       Defines min and max macros.
 *
 *       [Public]
 *
 ****/
 
-#if _MSC_VER > 1000
+#if     _MSC_VER > 1000
 #pragma once
 #endif
 

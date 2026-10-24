@@ -54,11 +54,11 @@ namespace _com_util {
 namespace _com_util {
 	// Convert char * to BSTR
 	//
-	BSTR ConvertStringToBSTR(const char* pSrc) throw(_com_error);
+	BSTR __stdcall ConvertStringToBSTR(const char* pSrc) throw(_com_error);
 
 	// Convert BSTR to char *
 	//
-	char* ConvertBSTRToString(BSTR pSrc) throw(_com_error);
+	char* __stdcall ConvertBSTRToString(BSTR pSrc) throw(_com_error);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -624,7 +624,7 @@ inline BSTR _bstr_t::Data_t::Copy() const throw(_com_error)
 {
 	if (m_wstr != NULL) {
 		BSTR bstr = ::SysAllocStringByteLen(reinterpret_cast<char*>(m_wstr),
-											::SysStringByteLen(bstr));
+											::SysStringByteLen(m_wstr));
 
 		if (bstr == NULL) {
 			_com_issue_error(E_OUTOFMEMORY);
@@ -1196,6 +1196,7 @@ inline _variant_t::operator bool() const throw(_com_error)
 inline _variant_t::operator IUnknown*() const throw(_com_error)
 {
 	if (V_VT(this) == VT_UNKNOWN) {
+		V_UNKNOWN(this)->AddRef();
 		return V_UNKNOWN(this);
 	}
 
@@ -1203,6 +1204,7 @@ inline _variant_t::operator IUnknown*() const throw(_com_error)
 
 	varDest.ChangeType(VT_UNKNOWN, this);
 
+	V_UNKNOWN(&varDest)->AddRef();
 	return V_UNKNOWN(&varDest);
 }
 

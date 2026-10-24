@@ -1,72 +1,66 @@
 /***
 *streamb.h - definitions/declarations for the streambuf class
 *
-*	Copyright (c) 1990-1997, Microsoft Corporation.  All rights reserved.
+*       Copyright (c) 1990-1997, Microsoft Corporation.  All rights reserved.
 *
 *Purpose:
-*	This file defines the classes, values, macros, and functions
-*	used by the streambuf class.
-*	[AT&T C++]
+*       This file defines the classes, values, macros, and functions
+*       used by the streambuf class.
+*       [AT&T C++]
 *
 *       [Public]
 *
 ****/
 
-#if _MSC_VER > 1000
+#if     _MSC_VER > 1000
 #pragma once
 #endif
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 
 #ifndef _INC_STREAMB
 #define _INC_STREAMB
 
-#if !defined(_WIN32) && !defined(_MAC)
+#if     !defined(_WIN32) && !defined(_MAC)
 #error ERROR: Only Mac or Win32 targets supported!
 #endif
 
 
-#ifdef	_MSC_VER
+#ifdef  _MSC_VER
 // Currently, all MS C compilers for Win32 platforms default to 8 byte
 // alignment.
 #pragma pack(push,8)
 
 #include <useoldio.h>
 
-#endif	// _MSC_VER
+#endif  // _MSC_VER
 
 /* Define _CRTIMP */
 
 #ifndef _CRTIMP
-#ifdef	_NTSDK
-/* definition compatible with NT SDK */
-#define _CRTIMP
-#else	/* ndef _NTSDK */
-/* current definition */
-#ifdef	_DLL
+#ifdef  _DLL
 #define _CRTIMP __declspec(dllimport)
-#else	/* ndef _DLL */
+#else   /* ndef _DLL */
 #define _CRTIMP
-#endif	/* _DLL */
-#endif	/* _NTSDK */
-#endif	/* _CRTIMP */
+#endif  /* _DLL */
+#endif  /* _CRTIMP */
 
 
-#include <ios.h>	// need ios::seek_dir definition
+#include <ios.h>        // need ios::seek_dir definition
 
 #ifndef NULL
-#define NULL	0
+#define NULL    0
 #endif
 
 #ifndef EOF
-#define EOF	(-1)
+#define EOF     (-1)
 #endif
 
-#ifdef	_MSC_VER
+#ifdef  _MSC_VER
 // C4514: "unreferenced inline function has been removed"
 #pragma warning(disable:4514) // disable C4514 warning
-// #pragma warning(default:4514)	// use this to reenable, if desired
-#endif	// _MSC_VER
+// #pragma warning(default:4514)        // use this to reenable, if desired
+#endif  // _MSC_VER
 
 typedef long streampos, streamoff;
 
@@ -99,15 +93,15 @@ public:
     virtual int xsputn(const char *,int);
     virtual int xsgetn(char *,int);
 
-    virtual int overflow(int =EOF) = 0;	// pure virtual function
-    virtual int underflow() = 0;	// pure virtual function
+    virtual int overflow(int =EOF) = 0; // pure virtual function
+    virtual int underflow() = 0;        // pure virtual function
 
     virtual int pbackfail(int);
 
     void dbp();
 
-#ifdef	_MT
-    void setlock() { LockFlg--; }	// <0 indicates lock required;
+#ifdef  _MT
+    void setlock() { LockFlg--; }       // <0 indicates lock required;
     void clrlock() { if (LockFlg <= 0) LockFlg++; }
     void lock() { if (LockFlg<0) _mtlock(lockptr()); };
     void unlock() { if (LockFlg<0) _mtunlock(lockptr()); }
@@ -139,7 +133,7 @@ protected:
     inline void unbuffered(int);
     int allocate();
     virtual int doallocate();
-#ifdef	_MT
+#ifdef  _MT
     _PCRT_CRITICAL_SECTION lockptr() { return & x_lock; }
 #endif
 
@@ -155,9 +149,9 @@ private:
     char * _eback;
     char * _gptr;
     char * _egptr;
-#ifdef	_MT
-    int LockFlg;		// <0 indicates locking required
-   _CRT_CRITICAL_SECTION x_lock;	// lock needed only for multi-thread operation
+#ifdef  _MT
+    int LockFlg;                // <0 indicates locking required
+   _CRT_CRITICAL_SECTION x_lock;        // lock needed only for multi-thread operation
 #endif
 };
 
@@ -187,11 +181,11 @@ inline void streambuf::setp(char * _p, char * _ep) {_pptr=_pbase=_p; _epptr=_ep;
 inline int streambuf::unbuffered() const { return _fUnbuf; }
 inline void streambuf::unbuffered(int _f) { _fUnbuf = _f; }
 
-#ifdef	_MSC_VER
+#ifdef  _MSC_VER
 // Restore previous packing
 #pragma pack(pop)
-#endif	// _MSC_VER
+#endif  // _MSC_VER
 
-#endif	// _INC_STREAMB
+#endif  // _INC_STREAMB
 
-#endif /* __cplusplus */
+#endif  /* __cplusplus */

@@ -12,14 +12,14 @@
 *
 ****/
 
-#if _MSC_VER > 1000
+#if     _MSC_VER > 1000
 #pragma once
 #endif
 
 #ifndef _INC_STDIO
 #define _INC_STDIO
 
-#if !defined(_WIN32) && !defined(_MAC)
+#if     !defined(_WIN32) && !defined(_MAC)
 #error ERROR: Only Mac or Win32 targets supported!
 #endif
 
@@ -37,42 +37,15 @@ extern "C" {
 #endif
 
 
-/* Define _CRTAPI1 (for compatibility with the NT SDK) */
-
-#ifndef _CRTAPI1
-#if     _MSC_VER >= 800 && _M_IX86 >= 300
-#define _CRTAPI1 __cdecl
-#else
-#define _CRTAPI1
-#endif
-#endif
-
-
-/* Define _CRTAPI2 (for compatibility with the NT SDK) */
-
-#ifndef _CRTAPI2
-#if     _MSC_VER >= 800 && _M_IX86 >= 300
-#define _CRTAPI2 __cdecl
-#else
-#define _CRTAPI2
-#endif
-#endif
-
 
 /* Define _CRTIMP */
 
 #ifndef _CRTIMP
-#ifdef  _NTSDK
-/* definition compatible with NT SDK */
-#define _CRTIMP
-#else   /* ndef _NTSDK */
-/* current definition */
 #ifdef  _DLL
 #define _CRTIMP __declspec(dllimport)
 #else   /* ndef _DLL */
 #define _CRTIMP
 #endif  /* _DLL */
-#endif  /* _NTSDK */
 #endif  /* _CRTIMP */
 
 
@@ -174,7 +147,8 @@ typedef struct _iobuf FILE;
 #define _FILE_DEFINED
 #endif
 
-#if     !defined(_M_MPPC) && !defined(_M_M68K)
+
+#ifndef _MAC
 
 /* Directory where temporary files may be created. */
 
@@ -186,16 +160,18 @@ typedef struct _iobuf FILE;
 #define _wP_tmpdir  L"\\"
 #endif
 
-
 /* L_tmpnam = size of P_tmpdir
  *            + 1 (in case P_tmpdir does not end in "/")
  *            + 12 (for the filename string)
  *            + 1 (for the null terminator)
  */
 #define L_tmpnam sizeof(_P_tmpdir)+12
-#else   /* defined(_M_M68K) || defined(_M_MPPC) */
+
+#else   /* def _MAC */
+
 #define L_tmpnam 255
-#endif  /* !defined(_M_M68K) && defined(_M_MPPC) */
+
+#endif  /* _MAC */
 
 
 #ifdef  _POSIX_
@@ -231,30 +207,11 @@ typedef struct _iobuf FILE;
 /* Declare _iob[] array */
 
 #ifndef _STDIO_DEFINED
-
-#ifdef  _NTSDK
-
-#ifdef  _DLL
-extern FILE * _iob;
-#else
-extern FILE _iob[];
-#endif
-
-#else   /* ndef _NTSDK */
-
 #if     defined(_DLL) && defined(_M_IX86)
-
-#define _iob    (__p__iob())
+/* Retained for compatibility with VC++ 5.0 and earlier versions */
 _CRTIMP extern FILE * __cdecl __p__iob(void);
-
-#else   /* !(defined(_DLL) && defined(_M_IX86)) */
-
+#endif
 _CRTIMP extern FILE _iob[];
-
-#endif  /* defined(_DLL) && defined(_M_IX86) */
-
-#endif  /* _NTSDK */
-
 #endif  /* _STDIO_DEFINED */
 
 
@@ -479,22 +436,6 @@ _CRTIMP wchar_t * __cdecl _wtmpnam(wchar_t *);
 #define P_tmpdir  _P_tmpdir
 #define SYS_OPEN  _SYS_OPEN
 
-#ifdef  _NTSDK
-
-#define fcloseall _fcloseall
-#define fdopen    _fdopen
-#define fgetchar  _fgetchar
-#define fileno    _fileno
-#define flushall  _flushall
-#define fputchar  _fputchar
-#define getw      _getw
-#define putw      _putw
-#define rmtmp     _rmtmp
-#define tempnam   _tempnam
-#define unlink    _unlink
-
-#else   /* ndef _NTSDK */
-
 _CRTIMP int __cdecl fcloseall(void);
 _CRTIMP FILE * __cdecl fdopen(int, const char *);
 _CRTIMP int __cdecl fgetchar(void);
@@ -507,14 +448,11 @@ _CRTIMP int __cdecl rmtmp(void);
 _CRTIMP char * __cdecl tempnam(const char *, const char *);
 _CRTIMP int __cdecl unlink(const char *);
 
-#endif  /* _NTSDK */
-
 #endif  /* __STDC__ */
 
 #ifdef  __cplusplus
 }
 #endif
-
 
 #ifdef  _MSC_VER
 #pragma pack(pop)

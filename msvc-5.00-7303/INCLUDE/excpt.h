@@ -12,73 +12,46 @@
 *
 ****/
 
-#if _MSC_VER > 1000
+#if     _MSC_VER > 1000
 #pragma once
 #endif
 
 #ifndef _INC_EXCPT
 #define _INC_EXCPT
 
-#if !defined(_WIN32) && !defined(_MAC)
+#if     !defined(_WIN32) && !defined(_MAC)
 #error ERROR: Only Mac or Win32 targets supported!
 #endif
 
 
-#ifdef	_MSC_VER
+#ifdef  _MSC_VER
 /*
  * Currently, all MS C compilers for Win32 platforms default to 8 byte
  * alignment.
  */
 #pragma pack(push,8)
-#endif	/* _MSC_VER */
+#endif  /* _MSC_VER */
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
-
-/* Define _CRTAPI1 (for compatibility with the NT SDK) */
-
-#ifndef _CRTAPI1
-#if _MSC_VER >= 800 && _M_IX86 >= 300
-#define _CRTAPI1 __cdecl
-#else
-#define _CRTAPI1
-#endif
-#endif
-
-
-/* Define _CRTAPI2 (for compatibility with the NT SDK) */
-
-#ifndef _CRTAPI2
-#if _MSC_VER >= 800 && _M_IX86 >= 300
-#define _CRTAPI2 __cdecl
-#else
-#define _CRTAPI2
-#endif
-#endif
 
 
 /* Define _CRTIMP */
 
 #ifndef _CRTIMP
-#ifdef  _NTSDK
-/* definition compatible with NT SDK */
-#define _CRTIMP
-#else   /* ndef _NTSDK */
-/* current definition */
 #ifdef  _DLL
 #define _CRTIMP __declspec(dllimport)
 #else   /* ndef _DLL */
 #define _CRTIMP
 #endif  /* _DLL */
-#endif  /* _NTSDK */
 #endif  /* _CRTIMP */
 
 
 /* Define __cdecl for non-Microsoft compilers */
 
-#if ( !defined(_MSC_VER) && !defined(__cdecl) )
+#if     ( !defined(_MSC_VER) && !defined(__cdecl) )
 #define __cdecl
 #endif
 
@@ -140,12 +113,6 @@ _CRTIMP EXCEPTION_DISPOSITION __C_specific_handler (
 
 #ifdef  _MSC_VER
 
-#if defined(_NTSDK) && !defined(__cplusplus)
-#define try                         __try
-#define except                      __except
-#define finally                     __finally
-#define leave                       __leave
-#endif  /* _NTSDK */
 #define GetExceptionCode            _exception_code
 #define exception_code              _exception_code
 #define GetExceptionInformation     (struct _EXCEPTION_POINTERS *)_exception_info
@@ -170,12 +137,12 @@ int           __cdecl _abnormal_termination(void);
 
 
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#ifdef	_MSC_VER
+#ifdef  _MSC_VER
 #pragma pack(pop)
-#endif	/* _MSC_VER */
+#endif  /* _MSC_VER */
 
-#endif	/* _INC_EXCPT */
+#endif  /* _INC_EXCPT */

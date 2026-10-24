@@ -1,85 +1,58 @@
 /***
 *fpieee.h - Definitions for floating point IEEE exception handling
 *
-*	Copyright (c) 1991-1997, Microsoft Corporation.	All rights reserved.
+*       Copyright (c) 1991-1997, Microsoft Corporation. All rights reserved.
 *
 *Purpose:
-*	This file contains constant and type definitions for handling
-*	floating point exceptions [ANSI/IEEE std. 754]
+*       This file contains constant and type definitions for handling
+*       floating point exceptions [ANSI/IEEE std. 754]
 *
 *       [Public]
 *
 ****/
 
-#if _MSC_VER > 1000
+#if     _MSC_VER > 1000
 #pragma once
 #endif
 
 #ifndef _INC_FPIEEE
 #define _INC_FPIEEE
 
-#if !defined(_WIN32) && !defined(_MAC)
+#if     !defined(_WIN32) && !defined(_MAC)
 #error ERROR: Only Mac or Win32 targets supported!
 #endif
 
 
-#ifndef __assembler	/* MIPS ONLY: Protect from assembler */
+#ifndef __assembler     /* MIPS ONLY: Protect from assembler */
 
-#ifdef	_MSC_VER
+#ifdef  _MSC_VER
 /*
  * Currently, all MS C compilers for Win32 platforms default to 8 byte
  * alignment.
  */
 #pragma pack(push,8)
-#endif	/* _MSC_VER */
+#endif  /* _MSC_VER */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
-/* Define _CRTAPI1 (for compatibility with the NT SDK) */
-
-#ifndef _CRTAPI1
-#if	_MSC_VER >= 800 && _M_IX86 >= 300
-#define _CRTAPI1 __cdecl
-#else
-#define _CRTAPI1
-#endif
-#endif
-
-
-/* Define _CRTAPI2 (for compatibility with the NT SDK) */
-
-#ifndef _CRTAPI2
-#if	_MSC_VER >= 800 && _M_IX86 >= 300
-#define _CRTAPI2 __cdecl
-#else
-#define _CRTAPI2
-#endif
-#endif
-
 
 /* Define _CRTIMP */
 
 #ifndef _CRTIMP
-#ifdef	_NTSDK
-/* definition compatible with NT SDK */
-#define _CRTIMP
-#else	/* ndef _NTSDK */
-/* current definition */
-#ifdef	_DLL
+#ifdef  _DLL
 #define _CRTIMP __declspec(dllimport)
-#else	/* ndef _DLL */
+#else   /* ndef _DLL */
 #define _CRTIMP
-#endif	/* _DLL */
-#endif	/* _NTSDK */
-#endif	/* _CRTIMP */
+#endif  /* _DLL */
+#endif  /* _CRTIMP */
 
 
 /* Define __cdecl for non-Microsoft compilers */
 
-#if	( !defined(_MSC_VER) && !defined(__cdecl) )
+#if     ( !defined(_MSC_VER) && !defined(__cdecl) )
 #define __cdecl
 #endif
 
@@ -162,13 +135,13 @@ typedef enum {
 
 } _FP_OPERATION_CODE;
 
-#endif	/* #ifndef __assembler */
+#endif  /* #ifndef __assembler */
 
 /*
  * Define rounding modes.
  */
 
-#ifndef __assembler	/* MIPS ONLY: Protect from assembler */
+#ifndef __assembler     /* MIPS ONLY: Protect from assembler */
 
 typedef enum {
     _FpRoundNearest,
@@ -188,12 +161,12 @@ typedef enum {
  * Define floating point context record
  */
 
-typedef float		_FP32;
-typedef double		_FP64;
-typedef short		_I16;
-typedef int		_I32;
-typedef unsigned short	_U16;
-typedef unsigned int	_U32;
+typedef float           _FP32;
+typedef double          _FP64;
+typedef short           _I16;
+typedef int             _I32;
+typedef unsigned short  _U16;
+typedef unsigned int    _U32;
 
 
 typedef struct {
@@ -219,19 +192,19 @@ typedef struct {
 
 typedef struct {
     union {
-	_FP32	     Fp32Value;
-	_FP64	     Fp64Value;
-	_FP80	     Fp80Value;
-	_FP128	     Fp128Value;
-	_I16	     I16Value;
-	_I32	     I32Value;
-	_I64	     I64Value;
-	_U16	     U16Value;
-	_U32	     U32Value;
-	_U64	     U64Value;
-	_BCD80	     Bcd80Value;
-	char	     *StringValue;
-	int	     CompareValue;
+        _FP32        Fp32Value;
+        _FP64        Fp64Value;
+        _FP80        Fp80Value;
+        _FP128       Fp128Value;
+        _I16         I16Value;
+        _I32         I32Value;
+        _I64         I64Value;
+        _U16         U16Value;
+        _U32         U32Value;
+        _U64         U64Value;
+        _BCD80       Bcd80Value;
+        char         *StringValue;
+        int          CompareValue;
     } Value;
 
     unsigned int OperandValid : 1;
@@ -269,18 +242,18 @@ struct _EXCEPTION_POINTERS;
  */
 
 _CRTIMP int __cdecl _fpieee_flt(
-	unsigned long,
-	struct _EXCEPTION_POINTERS *,
-	int (__cdecl *)(_FPIEEE_RECORD *)
-	);
+        unsigned long,
+        struct _EXCEPTION_POINTERS *,
+        int (__cdecl *)(_FPIEEE_RECORD *)
+        );
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#ifdef	_MSC_VER
+#ifdef  _MSC_VER
 #pragma pack(pop)
-#endif	/* _MSC_VER */
-#endif	/* #ifndef __assembler */
+#endif  /* _MSC_VER */
+#endif  /* #ifndef __assembler */
 
-#endif	/* _INC_FPIEEE */
+#endif  /* _INC_FPIEEE */

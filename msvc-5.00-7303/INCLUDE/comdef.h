@@ -59,7 +59,9 @@ class _com_error {
 public:
 	// Constructors
 	//
-	_com_error(HRESULT hr, IErrorInfo* perrinfo = NULL) throw();
+	_com_error(HRESULT hr,
+               IErrorInfo* perrinfo = NULL,
+               bool fAddRef = false) throw();
 	_com_error(const _com_error& that) throw();
 
 	// Destructor
@@ -101,10 +103,12 @@ private:
 	mutable TCHAR *			m_pszMsg;
 };
 
-inline _com_error::_com_error(HRESULT hr, IErrorInfo* perrinfo) throw()
+inline _com_error::_com_error(HRESULT hr,
+                              IErrorInfo* perrinfo,
+                              bool fAddRef) throw()
 	: m_hresult(hr), m_perrinfo(perrinfo), m_pszMsg(NULL)
 {
-	if (m_perrinfo != NULL) {
+	if (m_perrinfo != NULL && fAddRef) {
 		m_perrinfo->AddRef();
 	}
 }

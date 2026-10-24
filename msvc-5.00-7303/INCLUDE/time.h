@@ -13,14 +13,14 @@
 *
 ****/
 
-#if _MSC_VER > 1000
+#if     _MSC_VER > 1000
 #pragma once
 #endif
 
 #ifndef _INC_TIME
 #define _INC_TIME
 
-#if !defined(_WIN32) && !defined(_MAC)
+#if     !defined(_WIN32) && !defined(_MAC)
 #error ERROR: Only Mac or Win32 targets supported!
 #endif
 
@@ -33,47 +33,20 @@
 #pragma pack(push,8)
 #endif  /* _MSC_VER */
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
-
-/* Define _CRTAPI1 (for compatibility with the NT SDK) */
-
-#ifndef _CRTAPI1
-#if     _MSC_VER >= 800 && _M_IX86 >= 300
-#define _CRTAPI1 __cdecl
-#else
-#define _CRTAPI1
-#endif
-#endif
-
-
-/* Define _CRTAPI2 (for compatibility with the NT SDK) */
-
-#ifndef _CRTAPI2
-#if     _MSC_VER >= 800 && _M_IX86 >= 300
-#define _CRTAPI2 __cdecl
-#else
-#define _CRTAPI2
-#endif
-#endif
 
 
 /* Define _CRTIMP */
 
 #ifndef _CRTIMP
-#ifdef  _NTSDK
-/* definition compatible with NT SDK */
-#define _CRTIMP
-#else   /* ndef _NTSDK */
-/* current definition */
 #ifdef  _DLL
 #define _CRTIMP __declspec(dllimport)
 #else   /* ndef _DLL */
 #define _CRTIMP
 #endif  /* _DLL */
-#endif  /* _NTSDK */
 #endif  /* _CRTIMP */
 
 
@@ -88,7 +61,7 @@ extern "C" {
 typedef unsigned short wchar_t;
 #define _WCHAR_T_DEFINED
 #endif
-#endif /* ndef _MAC */
+#endif  /* ndef _MAC */
 
 /* Define the implementation defined time type */
 
@@ -144,65 +117,13 @@ struct tm {
  * routines.
  */
 
-#ifdef  _NTSDK
-
-#ifdef  _DLL
-
-/* Declarations and definitions compatible with the NT SDK */
-
-#define _daylight   (*_daylight_dll)
-#define _timezone   (*_timezone_dll)
-
-/* non-zero if daylight savings time is used */
-extern int * _daylight_dll;
-
-/* difference in seconds between GMT and local time */
-extern long * _timezone_dll;
-
-/* standard/daylight savings time zone names */
-extern char ** _tzname;
-
-#else   /* ndef _DLL */
-
-
-#ifdef  _POSIX_
-extern char * _rule;
-#endif  /* _POSIX_ */
-
-/* non-zero if daylight savings time is used */
-extern int _daylight;
-
-/* difference in seconds between GMT and local time */
-extern long _timezone;
-
-/* standard/daylight savings time zone names */
-#ifdef  _POSIX_
-extern char * tzname[2];
-#else   /* ndef _POSIX_ */
-extern char * _tzname[2];
-#endif  /* _POSIX_ */
-
-#endif  /* _DLL */
-
-#else   /* ndef _NTSDK */
-
-/* Current declarations and definitions */
-
 #if     defined(_DLL) && defined(_M_IX86)
-
-#define _daylight   (*__p__daylight())
+/* Retained for compatibility with VC++ 5.0 and earlier versions */
 _CRTIMP int * __cdecl __p__daylight(void);
-
-#define _dstbias    (*__p__dstbias())
 _CRTIMP long * __cdecl __p__dstbias(void);
-
-#define _timezone   (*__p__timezone())
 _CRTIMP long * __cdecl __p__timezone(void);
-
-#define _tzname     (__p__tzname())
 _CRTIMP char ** __cdecl __p__tzname(void);
-
-#else   /* !(defined(_DLL) && defined(_M_IX86)) */
+#endif
 
 /* non-zero if daylight savings time is used */
 _CRTIMP extern int _daylight;
@@ -215,10 +136,6 @@ _CRTIMP extern long _timezone;
 
 /* standard/daylight savings time zone names */
 _CRTIMP extern char * _tzname[2];
-
-#endif  /* defined(_DLL) && defined(_M_IX86) */
-
-#endif  /* _NTSDK */
 
 
 /* Function prototypes */
@@ -268,7 +185,7 @@ _CRTIMP wchar_t * __cdecl _wstrtime(wchar_t *);
 
 #define _WTIME_DEFINED
 #endif
-#endif /* ndef _MAC */
+#endif  /* ndef _MAC */
 
 
 #if     !__STDC__ || defined(_POSIX_)
@@ -277,47 +194,18 @@ _CRTIMP wchar_t * __cdecl _wstrtime(wchar_t *);
 
 #define CLK_TCK  CLOCKS_PER_SEC
 
-#ifdef  _NTSDK
-
-/* Declarations and definitions compatible with the NT SDK */
-
-#define daylight _daylight
-/* timezone cannot be #defined because of <sys/timeb.h> */
-
-#ifndef _POSIX_
-#define tzname  _tzname
-#define tzset   _tzset
-#endif /* _POSIX_ */
-
-#else   /* ndef _NTSDK */
-
-#if     defined(_DLL) && defined(_M_IX86)
-
-#define daylight   (*__p__daylight())
-/* timezone cannot be #defined because of <sys/timeb.h>
-   so CRT DLL for win32s will not have timezone */
-_CRTIMP extern long timezone;
-#define tzname     (__p__tzname())
-
-#else   /* !(defined(_DLL) && defined(_M_IX86)) */
-
 _CRTIMP extern int daylight;
 _CRTIMP extern long timezone;
 _CRTIMP extern char * tzname[2];
 
-#endif  /* !(defined(_DLL) && defined(_M_IX86)) */
-
 _CRTIMP void __cdecl tzset(void);
-
-#endif  /* _NTSDK */
 
 #endif  /* __STDC__ */
 
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 }
 #endif
-
 
 #ifdef  _MSC_VER
 #pragma pack(pop)

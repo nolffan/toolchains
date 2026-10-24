@@ -10,61 +10,34 @@
 *
 ****/
 
-#if _MSC_VER > 1000
+#if     _MSC_VER > 1000
 #pragma once
 #endif
 
 #ifndef _INC_NEW
 #define _INC_NEW
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 
-#if !defined(_MSC_EXTENSIONS)
+#ifndef _MSC_EXTENSIONS
 #include <new>
 #endif
 
-#if !defined(_WIN32) && !defined(_MAC)
+#if     !defined(_WIN32) && !defined(_MAC)
 #error ERROR: Only Mac or Win32 targets supported!
 #endif
 
 
 
-/* Define _CRTAPI1 (for compatibility with the NT SDK) */
-
-#ifndef _CRTAPI1
-#if     _MSC_VER >= 800 && _M_IX86 >= 300
-#define _CRTAPI1 __cdecl
-#else
-#define _CRTAPI1
-#endif
-#endif
-
-
-/* Define _CRTAPI2 (for compatibility with the NT SDK) */
-
-#ifndef _CRTAPI2
-#if     _MSC_VER >= 800 && _M_IX86 >= 300
-#define _CRTAPI2 __cdecl
-#else
-#define _CRTAPI2
-#endif
-#endif
-
 
 /* Define _CRTIMP */
 
 #ifndef _CRTIMP
-#ifdef  _NTSDK
-/* definition compatible with NT SDK */
-#define _CRTIMP
-#else   /* ndef _NTSDK */
-/* current definition */
 #ifdef  _DLL
 #define _CRTIMP __declspec(dllimport)
 #else   /* ndef _DLL */
 #define _CRTIMP
 #endif  /* _DLL */
-#endif  /* _NTSDK */
 #endif  /* _CRTIMP */
 
 
@@ -82,7 +55,7 @@ typedef unsigned int size_t;
 #define _SIZE_T_DEFINED
 #endif
 
-#if defined(_MSC_EXTENSIONS)
+#ifdef  _MSC_EXTENSIONS
 typedef void (__cdecl * new_handler) ();
 _CRTIMP new_handler set_new_handler(new_handler);
 #endif
@@ -90,7 +63,7 @@ _CRTIMP new_handler set_new_handler(new_handler);
 #ifndef __PLACEMENT_NEW_INLINE
 #define __PLACEMENT_NEW_INLINE
 inline void *__cdecl operator new(size_t, void *_P)
-	{return (_P); }
+        {return (_P); }
 #endif
 
 

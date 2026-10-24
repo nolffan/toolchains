@@ -83,7 +83,7 @@ MSVC600_URL="https://codeload.github.com/itsmattkc/MSVC600/tar.gz/$MSVC600_COMMI
 
 # --- the finished trees: SHA-256 over `sha256sum` of every file, sorted -----
 declare -A TREE_SHA=(
-    [msvc-5.00-7303]=181bee181a6da9391e3ed02e466db83b038db242642ef53f46e094bc7f340567
+    [msvc-5.00-7303]=a9256c6db678444e64a0cd5dfe776fc2a1987d945e480585026e3b64e90f6f8c
     [msvc-7.10-3077]=566e648d62eca82c7a035a2eb3cdcc8467480a02e4d905784dfb55eda5d7ce6f
     [msvc-6.00-9782]=78ff2ccc2c2c5f9e38cb0155811672b0a4de56f1e673ef779442ce4e89d93edb
     [msvc-6.00-8168]=17b81cd04ffa07047450a2f6c706f51f76b1610f30835e12e25d0b742b2c986a
@@ -162,8 +162,9 @@ long_names() {
 
 # Visual C++ 5.0 SP3 (cl/c2 11.00.7303, link 5.10.7303): CD 1's DevStudio/VC
 # command-line tools, headers and libraries, with the PDB writer from
-# SharedIDE, Service Pack 3's English compiler and linker (VC/BIN) and its
-# shared msdis100.dll and mspdb50.dll laid over them, and msvcp50.dll (which
+# SharedIDE, Service Pack 3's English compiler and linker (VC/BIN), its
+# run-time libraries and headers (all/vc) and its shared msdis100.dll and
+# mspdb50.dll laid over them, and msvcp50.dll (which
 # SP3's msdis100.dll needs) from VC/REDIST. SP3's cabinet set begins inside
 # vssp3_1.exe.
 build_500() {
@@ -197,6 +198,13 @@ PY
     done
     chmod -R u+w "$out"
     lowercase "$out/BIN" "$out/INCLUDE" "$out/LIB"
+    # SP3's run-time libraries and headers (all/vc: lib, include, bin's
+    # cvtres.exe), over the CD's, lower-case like them
+    cp "$x/sp3/x/VS97_SP3/all/vc/bin/cvtres.exe" "$out/BIN/"
+    cp -r "$x/sp3/x/VS97_SP3/all/vc/include/." "$out/INCLUDE/"
+    cp "$x/sp3/x/VS97_SP3/all/vc/lib/"* "$out/LIB/"
+    chmod -R u+w "$out"
+    lowercase "$out/INCLUDE" "$out/LIB"
     rm -rf "$x"
 }
 

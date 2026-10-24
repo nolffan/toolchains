@@ -13,14 +13,14 @@
 *
 ****/
 
-#if _MSC_VER > 1000
+#if     _MSC_VER > 1000
 #pragma once
 #endif
 
 #ifndef _INC_SETJMP
 #define _INC_SETJMP
 
-#if !defined(_WIN32) && !defined(_MAC)
+#if     !defined(_WIN32) && !defined(_MAC)
 #error ERROR: Only Mac or Win32 targets supported!
 #endif
 
@@ -38,42 +38,15 @@ extern "C" {
 #endif
 
 
-/* Define _CRTAPI1 (for compatibility with the NT SDK) */
-
-#ifndef _CRTAPI1
-#if     _MSC_VER >= 800 && _M_IX86 >= 300
-#define _CRTAPI1 __cdecl
-#else
-#define _CRTAPI1
-#endif
-#endif
-
-
-/* Define _CRTAPI2 (for compatibility with the NT SDK) */
-
-#ifndef _CRTAPI2
-#if     _MSC_VER >= 800 && _M_IX86 >= 300
-#define _CRTAPI2 __cdecl
-#else
-#define _CRTAPI2
-#endif
-#endif
-
 
 /* Define _CRTIMP */
 
 #ifndef _CRTIMP
-#ifdef  _NTSDK
-/* definition compatible with NT SDK */
-#define _CRTIMP
-#else   /* ndef _NTSDK */
-/* current definition */
 #ifdef  _DLL
 #define _CRTIMP __declspec(dllimport)
 #else   /* ndef _DLL */
 #define _CRTIMP
 #endif  /* _DLL */
-#endif  /* _NTSDK */
 #endif  /* _CRTIMP */
 
 
@@ -123,7 +96,7 @@ typedef struct __JUMP_BUFFER {
 #elif   defined(_M_MRX000)
 
 #ifndef _INC_SETJMPEX
-#if _MSC_VER >= 1100
+#if     _MSC_VER >= 1100
 #define _setjmp  _setjmpVfp
 #endif
 #define setjmp  _setjmp
@@ -215,13 +188,13 @@ typedef struct __JUMP_BUFFER {
     double Fill[5];
 } _JUMP_BUFFER;
 
-#elif defined(_M_PPC)
+#elif   defined(_M_PPC)
 /*
  * The Microsoft VC++ V4.0 compiler uses an intrinsic _setjmp.
  * The Motorola C8.5 compiler implements setjmp as a function.
  */
 
-#if _MSC_VER > 850
+#if     _MSC_VER > 850
 #ifndef _INC_SETJMPEX
 #undef _setjmp
 #define setjmp  _setjmp

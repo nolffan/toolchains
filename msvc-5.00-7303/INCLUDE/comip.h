@@ -234,8 +234,6 @@ public:
 			_com_issue_error(hr);
 		}
 
-		_AddRef();
-
 		if (pOldInterface != NULL) {
 			pOldInterface->Release();
 		}

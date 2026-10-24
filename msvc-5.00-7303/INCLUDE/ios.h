@@ -1,58 +1,52 @@
 /***
 *ios.h - definitions/declarations for the ios class.
 *
-*	Copyright (c) 1990-1997, Microsoft Corporation.  All rights reserved.
+*       Copyright (c) 1990-1997, Microsoft Corporation.  All rights reserved.
 *
 *Purpose:
-*	This file defines the classes, values, macros, and functions
-*	used by the ios class.
-*	[AT&T C++]
+*       This file defines the classes, values, macros, and functions
+*       used by the ios class.
+*       [AT&T C++]
 *
 *       [Public]
 *
 ****/
 
-#if _MSC_VER > 1000
+#if     _MSC_VER > 1000
 #pragma once
 #endif
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 
 #ifndef _INC_IOS
 #define _INC_IOS
 
-#if !defined(_WIN32) && !defined(_MAC)
+#if     !defined(_WIN32) && !defined(_MAC)
 #error ERROR: Only Mac or Win32 targets supported!
 #endif
 
 
-#ifdef	_MSC_VER
+#ifdef  _MSC_VER
 // Currently, all MS C compilers for Win32 platforms default to 8 byte
 // alignment.
 #pragma pack(push,8)
 
 #include <useoldio.h>
 
-#endif	// _MSC_VER
+#endif  // _MSC_VER
 
 /* Define _CRTIMP */
 
 #ifndef _CRTIMP
-#ifdef	_NTSDK
-/* definition compatible with NT SDK */
-#define _CRTIMP
-#else	/* ndef _NTSDK */
-/* current definition */
-#ifdef	_DLL
+#ifdef  _DLL
 #define _CRTIMP __declspec(dllimport)
-#else	/* ndef _DLL */
+#else   /* ndef _DLL */
 #define _CRTIMP
-#endif	/* _DLL */
-#endif	/* _NTSDK */
-#endif	/* _CRTIMP */
+#endif  /* _DLL */
+#endif  /* _CRTIMP */
 
 
-#ifdef _MT
+#ifdef  _MT
 
 typedef struct __CRT_LIST_ENTRY {
    struct __CRT_LIST_ENTRY *Flink;
@@ -90,21 +84,21 @@ _CRTIMP void __cdecl _mtlock(_PCRT_CRITICAL_SECTION);
 _CRTIMP void __cdecl _mtunlock(_PCRT_CRITICAL_SECTION);
 }
 
-#endif /* _MT */
+#endif  /* _MT */
 
 #ifndef NULL
-#define NULL	0
+#define NULL    0
 #endif
 
 #ifndef EOF
-#define EOF	(-1)
+#define EOF     (-1)
 #endif
 
-#ifdef	_MSC_VER
+#ifdef  _MSC_VER
 // C4514: "unreferenced inline function has been removed"
 #pragma warning(disable:4514) // disable C4514 warning
-// #pragma warning(default:4514)	// use this to reenable, if desired
-#endif	// _MSC_VER
+// #pragma warning(default:4514)        // use this to reenable, if desired
+#endif  // _MSC_VER
 
 class _CRTIMP streambuf;
 class _CRTIMP ostream;
@@ -113,43 +107,43 @@ class _CRTIMP ios {
 
 public:
     enum io_state {  goodbit = 0x00,
-		     eofbit  = 0x01,
-		     failbit = 0x02,
-		     badbit  = 0x04 };
+                     eofbit  = 0x01,
+                     failbit = 0x02,
+                     badbit  = 0x04 };
 
     enum open_mode { in        = 0x01,
-		     out       = 0x02,
-		     ate       = 0x04,
-		     app       = 0x08,
-		     trunc     = 0x10,
-		     nocreate  = 0x20,
-		     noreplace = 0x40,
-		     binary    = 0x80 };
+                     out       = 0x02,
+                     ate       = 0x04,
+                     app       = 0x08,
+                     trunc     = 0x10,
+                     nocreate  = 0x20,
+                     noreplace = 0x40,
+                     binary    = 0x80 };
 
     enum seek_dir { beg=0, cur=1, end=2 };
 
     enum {  skipws     = 0x0001,
-	    left       = 0x0002,
-	    right      = 0x0004,
-	    internal   = 0x0008,
-	    dec        = 0x0010,
-	    oct        = 0x0020,
-	    hex        = 0x0040,
-	    showbase   = 0x0080,
-	    showpoint  = 0x0100,
-	    uppercase  = 0x0200,
-	    showpos    = 0x0400,
-	    scientific = 0x0800,
-	    fixed      = 0x1000,
-	    unitbuf    = 0x2000,
-	    stdio      = 0x4000
-				 };
+            left       = 0x0002,
+            right      = 0x0004,
+            internal   = 0x0008,
+            dec        = 0x0010,
+            oct        = 0x0020,
+            hex        = 0x0040,
+            showbase   = 0x0080,
+            showpoint  = 0x0100,
+            uppercase  = 0x0200,
+            showpos    = 0x0400,
+            scientific = 0x0800,
+            fixed      = 0x1000,
+            unitbuf    = 0x2000,
+            stdio      = 0x4000
+                                 };
 
-    static const long basefield;	// dec | oct | hex
-    static const long adjustfield;	// left | right | internal
-    static const long floatfield;	// scientific | fixed
+    static const long basefield;        // dec | oct | hex
+    static const long adjustfield;      // left | right | internal
+    static const long floatfield;       // scientific | fixed
 
-    ios(streambuf*);			// differs from ANSI
+    ios(streambuf*);                    // differs from ANSI
     virtual ~ios();
 
     inline long flags() const;
@@ -192,7 +186,7 @@ public:
     static int xalloc();
     static void sync_with_stdio();
 
-#ifdef	_MT
+#ifdef  _MT
     inline void __cdecl setlock();
     inline void __cdecl clrlock();
     void __cdecl lock() { if (LockFlg<0) _mtlock(lockptr()); };
@@ -208,19 +202,19 @@ public:
 
 protected:
     ios();
-    ios(const ios&);			// treat as private
+    ios(const ios&);                    // treat as private
     ios& operator=(const ios&);
     void init(streambuf*);
 
     enum { skipping, tied };
-    streambuf*	bp;
+    streambuf*  bp;
 
     int     state;
-    int     ispecial;			// not used
-    int     ospecial;			// not used
-    int     isfx_special;		// not used
-    int     osfx_special;		// not used
-    int     x_delbuf;			// if set, rdbuf() deleted by ~ios
+    int     ispecial;                   // not used
+    int     ospecial;                   // not used
+    int     isfx_special;               // not used
+    int     osfx_special;               // not used
+    int     x_delbuf;                   // if set, rdbuf() deleted by ~ios
 
     ostream* x_tie;
     long    x_flags;
@@ -228,9 +222,9 @@ protected:
     char    x_fill;
     int     x_width;
 
-    static void (*stdioflush)();	// not used
+    static void (*stdioflush)();        // not used
 
-#ifdef	_MT
+#ifdef  _MT
     static void lockc() { _mtlock(& x_lockc); }
     static void unlockc() { _mtunlock( & x_lockc); }
     _PCRT_CRITICAL_SECTION lockptr() { return & x_lock; }
@@ -240,20 +234,20 @@ protected:
 #endif
 
 public:
-    int	delbuf() const { return x_delbuf; }
+    int delbuf() const { return x_delbuf; }
     void    delbuf(int _i) { x_delbuf = _i; }
 
 private:
     static long x_maxbit;
     static int x_curindex;
-    static int sunk_with_stdio;		// make sure sync_with done only once
-#ifdef	_MT
+    static int sunk_with_stdio;         // make sure sync_with done only once
+#ifdef  _MT
 #define MAXINDEX 7
     static long x_statebuf[MAXINDEX+1];  // used by xalloc()
-    static int fLockcInit;		// used to see if x_lockc initialized
+    static int fLockcInit;              // used to see if x_lockc initialized
     static _CRT_CRITICAL_SECTION x_lockc; // used to lock static (class) data members
-    int LockFlg;			// enable locking flag
-    _CRT_CRITICAL_SECTION x_lock;	// used for multi-thread lock on object
+    int LockFlg;                        // enable locking flag
+    _CRT_CRITICAL_SECTION x_lock;       // used for multi-thread lock on object
 #else
     static long * x_statebuf;  // used by xalloc()
 #endif
@@ -298,18 +292,18 @@ inline streambuf* ios::rdbuf() const { return bp; }
 inline long & ios::iword(int _i) const { return x_statebuf[_i] ; }
 inline void * & ios::pword(int _i) const { return (void * &)x_statebuf[_i]; }
 
-#ifdef	_MT
+#ifdef  _MT
     inline void ios::setlock() { LockFlg--; if (bp) bp->setlock(); }
     inline void ios::clrlock() { if (LockFlg <= 0) LockFlg++; if (bp) bp->clrlock(); }
     inline void ios::lockbuf() { bp->lock(); }
     inline void ios::unlockbuf() { bp->unlock(); }
 #endif
 
-#ifdef	_MSC_VER
+#ifdef  _MSC_VER
 // Restore default packing
 #pragma pack(pop)
-#endif	// _MSC_VER
+#endif  // _MSC_VER
 
-#endif	// _INC_IOS
+#endif  // _INC_IOS
 
-#endif /* __cplusplus */
+#endif  /* __cplusplus */

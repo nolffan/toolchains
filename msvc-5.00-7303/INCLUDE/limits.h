@@ -12,14 +12,14 @@
 *
 ****/
 
-#if _MSC_VER > 1000
+#if     _MSC_VER > 1000
 #pragma once
 #endif
 
 #ifndef _INC_LIMITS
 #define _INC_LIMITS
 
-#if !defined(_WIN32) && !defined(_MAC)
+#if     !defined(_WIN32) && !defined(_MAC)
 #error ERROR: Only Mac or Win32 targets supported!
 #endif
 
@@ -84,7 +84,7 @@
 #define _UI128_MAX    0xffffffffffffffffffffffffffffffffui128
 #endif
 
-#ifdef _POSIX_
+#ifdef  _POSIX_
 
 #define _POSIX_ARG_MAX      4096
 #define _POSIX_CHILD_MAX    6
@@ -113,6 +113,6 @@
 #define STREAM_MAX          20
 #define TZNAME_MAX          10
 
-#endif /* POSIX */
+#endif  /* POSIX */
 
 #endif  /* _INC_LIMITS */

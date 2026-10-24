@@ -11,14 +11,14 @@
 *
 ****/
 
-#if _MSC_VER > 1000
+#if     _MSC_VER > 1000
 #pragma once
 #endif
 
 #ifndef _INC_SETJMPEX
 #define _INC_SETJMPEX
 
-#if !defined(_WIN32) && !defined(_MAC)
+#if     !defined(_WIN32) && !defined(_MAC)
 #error ERROR: Only Mac or Win32 targets supported!
 #endif
 
@@ -27,7 +27,7 @@
  * Definitions specific to particular setjmp implementations.
  */
 
-#if defined(_M_IX86)
+#if     defined(_M_IX86)
 
 /*
  * MS compiler for x86
@@ -36,9 +36,9 @@
 #define setjmp  _setjmp
 #define longjmp _longjmpex
 
-#elif defined(_M_MRX000)
+#elif   defined(_M_MRX000)
 
-#if _MSC_VER >= 1100
+#if     _MSC_VER >= 1100
 #define _setjmpex _setjmpexVfp
 #endif
 

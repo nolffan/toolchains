@@ -159,9 +159,6 @@ template<class _E> inline
 	bool (iscntrl)(_E _C, const locale& _L)
 	{return (_USE(_L, ctype<_E>).is(ctype_base::cntrl, _C)); }
 template<class _E> inline
-	bool (isdigit)(_E _C, const locale& _L)
-	{return (_USE(_L, ctype<_E>).is(ctype_base::digit, _C)); }
-template<class _E> inline
 	bool (isgraph)(_E _C, const locale& _L)
 	{return (_USE(_L, ctype<_E>).is(ctype_base::graph, _C)); }
 template<class _E> inline

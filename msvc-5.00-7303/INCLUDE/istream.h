@@ -12,16 +12,16 @@
 *
 ****/
 
-#if _MSC_VER > 1000
+#if     _MSC_VER > 1000
 #pragma once
 #endif
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 
 #ifndef _INC_ISTREAM
 #define _INC_ISTREAM
 
-#if !defined(_WIN32) && !defined(_MAC)
+#if     !defined(_WIN32) && !defined(_MAC)
 #error ERROR: Only Mac or Win32 targets supported!
 #endif
 
@@ -38,17 +38,11 @@
 /* Define _CRTIMP */
 
 #ifndef _CRTIMP
-#ifdef  _NTSDK
-/* definition compatible with NT SDK */
-#define _CRTIMP
-#else   /* ndef _NTSDK */
-/* current definition */
 #ifdef  _DLL
 #define _CRTIMP __declspec(dllimport)
 #else   /* ndef _DLL */
 #define _CRTIMP
 #endif  /* _DLL */
-#endif  /* _NTSDK */
 #endif  /* _CRTIMP */
 
 
@@ -191,4 +185,4 @@ _CRTIMP ios&        __cdecl oct(ios&);
 
 #endif  // _INC_ISTREAM
 
-#endif /* __cplusplus */
+#endif  /* __cplusplus */

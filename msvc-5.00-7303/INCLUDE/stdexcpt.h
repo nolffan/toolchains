@@ -12,37 +12,31 @@
 *
 ****/
 
-#if _MSC_VER > 1000
+#if     _MSC_VER > 1000
 #pragma once
 #endif
 
 #ifndef _INC_STDEXCPT
 #define _INC_STDEXCPT
 
-#if !defined(_WIN32) && !defined(_MAC)
+#if     !defined(_WIN32) && !defined(_MAC)
 #error ERROR: Only Mac or Win32 targets supported!
 #endif
 
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 
 #include <exception>
 
 #elif 0
 
 #ifndef _CRTIMP
-#ifdef	_NTSDK
-/* definition compatible with NT SDK */
-#define _CRTIMP
-#else	/* ndef _NTSDK */
-/* current definition */
-#ifdef	_DLL
+#ifdef  _DLL
 #define _CRTIMP __declspec(dllimport)
-#else	/* ndef _DLL */
+#else   /* ndef _DLL */
 #define _CRTIMP
-#endif	/* _DLL */
-#endif	/* _NTSDK */
-#endif	/* _CRTIMP */
+#endif  /* _DLL */
+#endif  /* _CRTIMP */
 
 #ifndef _SIZE_T_DEFINED
 typedef unsigned int size_t;
@@ -79,7 +73,7 @@ private:
     int _m_doFree;
 };
 
-#ifdef __RTTI_OLDNAMES
+#ifdef  __RTTI_OLDNAMES
 typedef exception xmsg;        // A synonym for folks using older standard
 #endif
 
@@ -92,6 +86,6 @@ public:
     logic_error (const __exString& _what_arg) : exception(_what_arg) {}
 };
 
-#endif	/* ndef __cplusplus */
-#endif	/* _INC_STDEXCPT */
+#endif  /* ndef __cplusplus */
+#endif  /* _INC_STDEXCPT */
 

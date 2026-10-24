@@ -13,7 +13,7 @@
 *
 ****/
 
-#if _MSC_VER > 1000 /*IFSTRIP=IGN*/
+#if     _MSC_VER > 1000 /*IFSTRIP=IGN*/
 #pragma once
 #endif
 
@@ -40,11 +40,6 @@ extern "C" {
 /* Define _CRTIMP */
 
 #ifndef _CRTIMP
-#ifdef  _NTSDK
-/* definition compatible with NT SDK */
-#define _CRTIMP
-#else   /* ndef _NTSDK */
-/* current definition */
 #ifdef  CRTDLL
 #define _CRTIMP __declspec(dllexport)
 #else   /* ndef CRTDLL */
@@ -54,7 +49,6 @@ extern "C" {
 #define _CRTIMP
 #endif  /* _DLL */
 #endif  /* CRTDLL */
-#endif  /* _NTSDK */
 #endif  /* _CRTIMP */
 
 
@@ -115,7 +109,7 @@ extern "C" {
 
 #ifdef  _UNICODE
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 }   /* ... extern "C" */
 #endif
 
@@ -395,14 +389,14 @@ __inline int __cdecl _tccmp(const wchar_t *_cpc1, const wchar_t *_cpc2) { return
 
 
 #if     (__STDC__ || defined(_NO_INLINING)) && !defined(_M_M68K)
-#define _wcsdec(_cpc1, _cpc2) ((_cpc2)-1)
+#define _wcsdec(_cpc1, _cpc2) ((_cpc1)>=(_cpc2) ? NULL : (_cpc2)-1)
 #define _wcsinc(_pc)    ((_pc)+1)
 #define _wcsnextc(_cpc) ((unsigned int) *(_cpc))
 #define _wcsninc(_pc, _sz) (((_pc)+(_sz)))
 #define _wcsncnt(_cpc, _sz) ((wcslen(_cpc)>_sz) ? _sz : wcslen(_cpc))
 #define _wcsspnp(_cpc1, _cpc2) ((*((_cpc1)+wcsspn(_cpc1,_cpc2))) ? ((_cpc1)+wcsspn(_cpc1,_cpc2)) : NULL)
 #else   /* __STDC__ */
-__inline wchar_t * __cdecl _wcsdec(const wchar_t * _cpc1, const wchar_t * _cpc2) { return (wchar_t *)(_cpc1,(_cpc2-1)); }
+__inline wchar_t * __cdecl _wcsdec(const wchar_t * _cpc1, const wchar_t * _cpc2) { return (wchar_t *)((_cpc1)>=(_cpc2) ? NULL : ((_cpc2)-1)); }
 __inline wchar_t * __cdecl _wcsinc(const wchar_t * _pc) { return (wchar_t *)(_pc+1); }
 __inline unsigned int __cdecl _wcsnextc(const wchar_t * _cpc) { return (unsigned int)*_cpc; }
 __inline wchar_t * __cdecl _wcsninc(const wchar_t * _pc, size_t _sz) { return (wchar_t *)(_pc+_sz); }
@@ -415,7 +409,7 @@ __inline wchar_t * __cdecl _wcsspnp( const wchar_t * _cpc1, const wchar_t * _cpc
 
 /* ++++++++++++++++++++ SBCS and MBCS ++++++++++++++++++++ */
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 }   /* ... extern "C" */
 #endif
 
@@ -578,7 +572,7 @@ extern "C" {
 #define _tfindnexti64   _findnexti64
 #define _tmktemp    _mktemp
 
-#ifdef _POSIX_
+#ifdef  _POSIX_
 #define _topen      open
 #define _taccess    access
 #else
@@ -613,11 +607,11 @@ extern "C" {
 #define _tsetlocale setlocale
 
 
-#ifdef _MBCS
+#ifdef  _MBCS
 
 /* ++++++++++++++++++++ MBCS ++++++++++++++++++++ */
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 }   /* ... extern "C" */
 #endif
 
@@ -645,7 +639,7 @@ typedef char            TCHAR;
 #endif
 
 
-#ifdef _MB_MAP_DIRECT
+#ifdef  _MB_MAP_DIRECT
 
 /* use mb functions directly - types must match */
 
@@ -838,9 +832,9 @@ __inline void _tccpy(_PC _s1,_CPC _s2) {_mbccpy((_PUC)_s1,(_CPUC)_s2); return;}
 __inline _UI _tcsnextc(_CPC _s1) {_UI _n=0; if (_ismbblead((_UI)*(_PUC)_s1)) _n=((_UI)*_s1++)<<8; _n+=(_UI)*_s1; return(_n);}
 
 
-#endif /* __STDC__ */
+#endif  /* __STDC__ */
 
-#endif /* _MB_MAP_DIRECT */
+#endif  /* _MB_MAP_DIRECT */
 
 
 /* MBCS-specific mappings */
@@ -988,14 +982,14 @@ __inline int __cdecl _tccmp(const char *_cpc1, const char *_cpc2) { return (int)
 
 
 #if     (__STDC__ || defined(_NO_INLINING)) && !defined(_M_M68K)
-#define _strdec(_cpc1, _cpc2) ((_cpc2)-1)
+#define _strdec(_cpc1, _cpc2) ((_cpc1)>=(_cpc2) ? NULL : (_cpc2)-1)
 #define _strinc(_pc)    ((_pc)+1)
 #define _strnextc(_cpc) ((unsigned int) *(_cpc))
 #define _strninc(_pc, _sz) (((_pc)+(_sz)))
 #define _strncnt(_cpc, _sz) ((strlen(_cpc)>_sz) ? _sz : strlen(_cpc))
 #define _strspnp(_cpc1, _cpc2) ((*((_cpc1)+strspn(_cpc1,_cpc2))) ? ((_cpc1)+strspn(_cpc1,_cpc2)) : NULL)
 #else   /* __STDC__ */
-__inline char * __cdecl _strdec(const char * _cpc1, const char * _cpc2) { return (char *)(_cpc1,(_cpc2-1)); }
+__inline char * __cdecl _strdec(const char * _cpc1, const char * _cpc2) { return (char *)((_cpc1)>=(_cpc2) ? NULL : (_cpc2-1)); }
 __inline char * __cdecl _strinc(const char * _pc) { return (char *)(_pc+1); }
 __inline unsigned int __cdecl _strnextc(const char * _cpc) { return (unsigned int)*_cpc; }
 __inline char * __cdecl _strninc(const char * _pc, size_t _sz) { return (char *)(_pc+_sz); }
@@ -1016,7 +1010,7 @@ __inline char * __cdecl _strspnp( const char * _cpc1, const char * _cpc2) { retu
 #define _TEXT(x)    __T(x)
 
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 }   /* ... extern "C" */
 #endif
 

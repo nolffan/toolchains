@@ -12,59 +12,32 @@
 *
 ****/
 
-#if _MSC_VER > 1000
+#if     _MSC_VER > 1000
 #pragma once
 #endif
 
 #ifndef _INC_STRING
 #define _INC_STRING
 
-#if !defined(_WIN32) && !defined(_MAC)
+#if     !defined(_WIN32) && !defined(_MAC)
 #error ERROR: Only Mac or Win32 targets supported!
 #endif
 
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
-
-/* Define _CRTAPI1 (for compatibility with the NT SDK) */
-
-#ifndef _CRTAPI1
-#if     _MSC_VER >= 800 && _M_IX86 >= 300
-#define _CRTAPI1 __cdecl
-#else
-#define _CRTAPI1
-#endif
-#endif
-
-
-/* Define _CRTAPI2 (for compatibility with the NT SDK) */
-
-#ifndef _CRTAPI2
-#if     _MSC_VER >= 800 && _M_IX86 >= 300
-#define _CRTAPI2 __cdecl
-#else
-#define _CRTAPI2
-#endif
-#endif
 
 
 /* Define _CRTIMP */
 
 #ifndef _CRTIMP
-#ifdef  _NTSDK
-/* definition compatible with NT SDK */
-#define _CRTIMP
-#else   /* ndef _NTSDK */
-/* current definition */
 #ifdef  _DLL
 #define _CRTIMP __declspec(dllimport)
 #else   /* ndef _DLL */
 #define _CRTIMP
 #endif  /* _DLL */
-#endif  /* _NTSDK */
 #endif  /* _CRTIMP */
 
 
@@ -86,7 +59,7 @@ typedef unsigned int size_t;
 typedef unsigned short wchar_t;
 #define _WCHAR_T_DEFINED
 #endif
-#endif /* ndef _MAC */
+#endif  /* ndef _MAC */
 
 #ifndef _NLSCMP_DEFINED
 #define _NLSCMPERROR    2147483647  /* currently == INT_MAX */
@@ -106,7 +79,7 @@ typedef unsigned short wchar_t;
 
 /* Function prototypes */
 
-#ifdef _M_MRX000
+#ifdef  _M_MRX000
 _CRTIMP void *  __cdecl memcpy(void *, const void *, size_t);
 _CRTIMP int     __cdecl memcmp(const void *, const void *, size_t);
 _CRTIMP void *  __cdecl memset(void *, int, size_t);
@@ -163,7 +136,7 @@ _CRTIMP char *  __cdecl strtok(char *, const char *);
 _CRTIMP char *  __cdecl _strupr(char *);
 _CRTIMP size_t  __cdecl strxfrm (char *, const char *, size_t);
 
-#if defined(_M_MPPC) || defined(_M_M68K)
+#ifdef  _MAC
 unsigned char * __cdecl _c2pstr(char *);
 char * __cdecl _p2cstr(unsigned char *);
 
@@ -174,23 +147,6 @@ __inline char * __cdecl p2cstr(unsigned char *sz) { return _p2cstr(sz);};
 #endif
 
 #if     !__STDC__
-
-#ifdef  _NTSDK
-
-/* Non-ANSI names for compatibility */
-#define memccpy  _memccpy
-#define memicmp  _memicmp
-#define strcmpi  _strcmpi
-#define stricmp  _stricmp
-#define strdup   _strdup
-#define strlwr   _strlwr
-#define strnicmp _strnicmp
-#define strnset  _strnset
-#define strrev   _strrev
-#define strset   _strset
-#define strupr   _strupr
-#define stricoll _stricoll
-#else   /* ndef _NTSDK */
 
 /* prototypes for oldnames.lib functions */
 _CRTIMP void * __cdecl memccpy(void *, const void *, int, unsigned int);
@@ -204,8 +160,6 @@ _CRTIMP char * __cdecl strnset(char *, int, size_t);
 _CRTIMP char * __cdecl strrev(char *);
         char * __cdecl strset(char *, int);
 _CRTIMP char * __cdecl strupr(char *);
-
-#endif  /* ndef _NTSDK */
 
 #endif  /* !__STDC__ */
 
@@ -250,21 +204,6 @@ _CRTIMP int __cdecl _wcsnicoll(const wchar_t *, const wchar_t *, size_t);
 /* old names */
 #define wcswcs wcsstr
 
-#ifdef  _NTSDK
-
-/* Non-ANSI names for compatibility */
-#define wcsdup  _wcsdup
-#define wcsicmp _wcsicmp
-#define wcsnicmp _wcsnicmp
-#define wcsnset _wcsnset
-#define wcsrev  _wcsrev
-#define wcsset  _wcsset
-#define wcslwr  _wcslwr
-#define wcsupr  _wcsupr
-#define wcsicoll _wcsicoll
-
-#else   /* ndef _NTSDK */
-
 /* prototypes for oldnames.lib functions */
 _CRTIMP wchar_t * __cdecl wcsdup(const wchar_t *);
 _CRTIMP int __cdecl wcsicmp(const wchar_t *, const wchar_t *);
@@ -276,16 +215,14 @@ _CRTIMP wchar_t * __cdecl wcslwr(wchar_t *);
 _CRTIMP wchar_t * __cdecl wcsupr(wchar_t *);
 _CRTIMP int __cdecl wcsicoll(const wchar_t *, const wchar_t *);
 
-#endif  /* ndef _NTSDK */
-
 #endif  /* !__STDC__ */
 
 #define _WSTRING_DEFINED
 #endif
 
-#endif /* ndef _MAC */
+#endif  /* ndef _MAC */
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 }
 #endif
 

@@ -10,21 +10,21 @@
 *
 ****/
 
-#if _MSC_VER > 1000
+#if     _MSC_VER > 1000
 #pragma once
 #endif
 
 #ifndef _INC_CRTDBG
 #define _INC_CRTDBG
 
-#if !defined(_WIN32) && !defined(_MAC)
+#if     !defined(_WIN32) && !defined(_MAC)
 #error ERROR: Only Mac or Win32 targets supported!
 #endif
 
 
 #ifdef  __cplusplus
 extern "C" {
-#endif /* __cplusplus */
+#endif  /* __cplusplus */
 
 
 #ifndef _DEBUG
@@ -96,7 +96,7 @@ extern "C" {
 #define _CrtDumpMemoryLeaks()               ((int)0)
 
 
-#else /* _DEBUG */
+#else   /* _DEBUG */
 
 
  /****************************************************************************
@@ -111,17 +111,11 @@ extern "C" {
 /* Define _CRTIMP */
 
 #ifndef _CRTIMP
-#ifdef  _NTSDK
-/* definition compatible with NT SDK */
-#define _CRTIMP
-#else   /* ndef _NTSDK */
-/* current definition */
 #ifdef  _DLL
 #define _CRTIMP __declspec(dllimport)
 #else   /* ndef _DLL */
 #define _CRTIMP
 #endif  /* _DLL */
-#endif  /* _NTSDK */
 #endif  /* _CRTIMP */
 
 #ifndef _SIZE_T_DEFINED
@@ -164,11 +158,10 @@ typedef void *_HFILE; /* file handle pointer */
 #define _CRTDBG_REPORT_FILE   ((_HFILE)-6)
 
 #if     defined(_DLL) && defined(_M_IX86)
-#define _crtAssertBusy   (*__p__crtAssertBusy())
+/* Retained for compatibility with VC++ 5.0 and earlier versions */
 _CRTIMP long * __cdecl __p__crtAssertBusy(void);
-#else   /* !(defined(_DLL) && defined(_M_IX86)) */
+#endif
 _CRTIMP extern long _crtAssertBusy;
-#endif  /* defined(_DLL) && defined(_M_IX86) */
 
 typedef int (__cdecl * _CRT_REPORT_HOOK)(int, char *, int *);
 
@@ -282,11 +275,10 @@ _CRTIMP void __cdecl _CrtDbgBreak(
 #endif /* _CRTDBG_MAP_ALLOC */
 
 #if     defined(_DLL) && defined(_M_IX86)
-#define _crtBreakAlloc   (*__p__crtBreakAlloc())
+/* Retained for compatibility with VC++ 5.0 and earlier versions */
 _CRTIMP long * __cdecl __p__crtBreakAlloc(void);
-#else   /* !(defined(_DLL) && defined(_M_IX86)) */
+#endif
 _CRTIMP extern long _crtBreakAlloc;      /* Break on this allocation */
-#endif  /* defined(_DLL) && defined(_M_IX86) */
 
 _CRTIMP long __cdecl _CrtSetBreakAlloc(
         long
@@ -367,11 +359,10 @@ _CRTIMP _CRT_ALLOC_HOOK __cdecl _CrtSetAllocHook(
  */
 
 #if     defined(_DLL) && defined(_M_IX86)
-#define _crtDbgFlag   (*__p__crtDbgFlag())
+/* Retained for compatibility with VC++ 5.0 and earlier versions */
 _CRTIMP int * __cdecl __p__crtDbgFlag(void);
-#else   /* !(defined(_DLL) && defined(_M_IX86)) */
+#endif
 _CRTIMP extern int _crtDbgFlag;
-#endif  /* defined(_DLL) && defined(_M_IX86) */
 
 /*
  * Bit values for _crtDbgFlag flag:
@@ -386,10 +377,10 @@ _CRTIMP extern int _crtDbgFlag;
 #define _CRTDBG_CHECK_CRT_DF        0x10  /* Leak check/diff CRT blocks */
 #define _CRTDBG_LEAK_CHECK_DF       0x20  /* Leak check at program exit */
 
-#define _CRTDBG_REPORT_FLAG     -1    /* Query bitflag status */
+#define _CRTDBG_REPORT_FLAG         -1    /* Query bitflag status */
 
-#define _BLOCK_TYPE(block)       (block & 0xFFFF)
-#define _BLOCK_SUBTYPE(block)    (block >> 16 & 0xFFFF)
+#define _BLOCK_TYPE(block)          (block & 0xFFFF)
+#define _BLOCK_SUBTYPE(block)       (block >> 16 & 0xFFFF)
 
 _CRTIMP int __cdecl _CrtCheckMemory(
         void
@@ -475,9 +466,9 @@ _CRTIMP int __cdecl _CrtDumpMemoryLeaks(
         void
         );
 
-#endif /* _DEBUG */
+#endif  /* _DEBUG */
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 }
 
 #ifndef _DEBUG
@@ -515,11 +506,10 @@ _CRTIMP void * __cdecl operator new(
 inline void* __cdecl operator new(unsigned int s)
         { return ::operator new(s, _NORMAL_BLOCK, __FILE__, __LINE__); }
 
-#endif /* _CRTDBG_MAP_ALLOC */
+#endif  /* _CRTDBG_MAP_ALLOC */
 
-#endif /* _DEBUG */
+#endif  /* _DEBUG */
 
-#endif /* __cplusplus */
+#endif  /* __cplusplus */
 
-
-#endif /* _INC_CRTDBG */
+#endif  /* _INC_CRTDBG */

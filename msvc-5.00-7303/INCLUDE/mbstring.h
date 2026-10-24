@@ -1,83 +1,55 @@
 /***
 * mbstring.h - MBCS string manipulation macros and functions
 *
-*	Copyright (c) 1990-1997, Microsoft Corporation.  All rights reserved.
+*       Copyright (c) 1990-1997, Microsoft Corporation.  All rights reserved.
 *
 *Purpose:
-*	This file contains macros and function declarations for the MBCS
-*	string manipulation functions.
+*       This file contains macros and function declarations for the MBCS
+*       string manipulation functions.
 *
 *       [Public]
 *
 ****/
 
-#if _MSC_VER > 1000
+#if     _MSC_VER > 1000
 #pragma once
 #endif
 
 #ifndef _INC_MBSTRING
 #define _INC_MBSTRING
 
-#if !defined(_WIN32) && !defined(_MAC)
+#if     !defined(_WIN32) && !defined(_MAC)
 #error ERROR: Only Mac or Win32 targets supported!
 #endif
 
 
-#ifdef	_MSC_VER
+#ifdef  _MSC_VER
 /*
  * Currently, all MS C compilers for Win32 platforms default to 8 byte
  * alignment.
  */
 #pragma pack(push,8)
-#endif	/* _MSC_VER */
+#endif  /* _MSC_VER */
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 extern "C" {
-#endif
-
-
-/* Define _CRTAPI1 (for compatibility with the NT SDK) */
-
-#ifndef _CRTAPI1
-#if	_MSC_VER >= 800 && _M_IX86 >= 300
-#define _CRTAPI1 __cdecl
-#else
-#define _CRTAPI1
-#endif
-#endif
-
-
-/* Define _CRTAPI2 (for compatibility with the NT SDK) */
-
-#ifndef _CRTAPI2
-#if	_MSC_VER >= 800 && _M_IX86 >= 300
-#define _CRTAPI2 __cdecl
-#else
-#define _CRTAPI2
-#endif
 #endif
 
 
 /* Define _CRTIMP */
 
 #ifndef _CRTIMP
-#ifdef	_NTSDK
-/* definition compatible with NT SDK */
-#define _CRTIMP
-#else	/* ndef _NTSDK */
-/* current definition */
-#ifdef	_DLL
+#ifdef  _DLL
 #define _CRTIMP __declspec(dllimport)
-#else	/* ndef _DLL */
+#else   /* ndef _DLL */
 #define _CRTIMP
-#endif	/* _DLL */
-#endif	/* _NTSDK */
-#endif	/* _CRTIMP */
+#endif  /* _DLL */
+#endif  /* _CRTIMP */
 
 
 /* Define __cdecl for non-Microsoft compilers */
 
-#if	( !defined(_MSC_VER) && !defined(__cdecl) )
+#if     ( !defined(_MSC_VER) && !defined(__cdecl) )
 #define __cdecl
 #endif
 
@@ -89,34 +61,34 @@ typedef unsigned int size_t;
 
 
 #ifndef _NLSCMP_DEFINED
-#define _NLSCMPERROR    2147483647	/* currently == INT_MAX */
+#define _NLSCMPERROR    2147483647      /* currently == INT_MAX */
 #define _NLSCMP_DEFINED
 #endif
 
 
 #ifndef _VA_LIST_DEFINED
-#ifdef	_M_ALPHA
+#ifdef  _M_ALPHA
 typedef struct {
-	char *a0;	/* pointer to first homed integer argument */
-	int offset;	/* byte offset of next parameter */
+        char *a0;       /* pointer to first homed integer argument */
+        int offset;     /* byte offset of next parameter */
 } va_list;
 #else
-typedef char *	va_list;
+typedef char *  va_list;
 #endif
 #define _VA_LIST_DEFINED
 #endif
 
 #ifndef _FILE_DEFINED
 struct _iobuf {
-	char *_ptr;
-	int   _cnt;
-	char *_base;
-	int   _flag;
-	int   _file;
-	int   _charbuf;
-	int   _bufsiz;
-	char *_tmpfname;
-	};
+        char *_ptr;
+        int   _cnt;
+        char *_base;
+        int   _flag;
+        int   _file;
+        int   _charbuf;
+        int   _bufsiz;
+        char *_tmpfname;
+        };
 typedef struct _iobuf FILE;
 #define _FILE_DEFINED
 #endif
@@ -205,7 +177,7 @@ _CRTIMP int __cdecl _ismbstrail( const unsigned char *, const unsigned char *);
 #define _MBLEADTRAIL_DEFINED
 #endif
 
-/*  Kanji specific prototypes.	*/
+/*  Kanji specific prototypes.  */
 
 _CRTIMP int __cdecl _ismbchira(unsigned int);
 _CRTIMP int __cdecl _ismbckata(unsigned int);
@@ -218,12 +190,12 @@ _CRTIMP unsigned int __cdecl _mbcjmstojis(unsigned int);
 _CRTIMP unsigned int __cdecl _mbctohira(unsigned int);
 _CRTIMP unsigned int __cdecl _mbctokata(unsigned int);
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#ifdef	_MSC_VER
+#ifdef  _MSC_VER
 #pragma pack(pop)
-#endif	/* _MSC_VER */
+#endif  /* _MSC_VER */
 
-#endif	/* _INC_MBSTRING */
+#endif  /* _INC_MBSTRING */

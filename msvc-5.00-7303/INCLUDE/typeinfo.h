@@ -1,7 +1,7 @@
 /***
 *typeinfo.h - Defines the type_info structure and exceptions used for RTTI
 *
-*	Copyright (c) 1994-1997, Microsoft Corporation. All rights reserved.
+*       Copyright (c) 1994-1997, Microsoft Corporation. All rights reserved.
 *
 *Purpose:
 *       Defines the type_info structure and exceptions used for
@@ -11,7 +11,7 @@
 *
 ****/
 
-#if _MSC_VER > 1000
+#if     _MSC_VER > 1000
 #pragma once
 #endif
 
@@ -22,7 +22,7 @@
 #ifndef _INC_TYPEINFO
 #define _INC_TYPEINFO
 
-#if !defined(_WIN32) && !defined(_MAC)
+#if     !defined(_WIN32) && !defined(_MAC)
 #error ERROR: Only Mac or Win32 targets supported!
 #endif
 
@@ -30,18 +30,12 @@
 /* Define _CRTIMP */
 
 #ifndef _CRTIMP
-#ifdef	_NTSDK
-/* definition compatible with NT SDK */
-#define _CRTIMP
-#else	/* ndef _NTSDK */
-/* current definition */
-#ifdef	_DLL
+#ifdef  _DLL
 #define _CRTIMP __declspec(dllimport)
-#else	/* ndef _DLL */
+#else   /* ndef _DLL */
 #define _CRTIMP
-#endif	/* _DLL */
-#endif	/* _NTSDK */
-#endif	/* _CRTIMP */
+#endif  /* _DLL */
+#endif  /* _CRTIMP */
 
 class type_info {
 public:
@@ -77,12 +71,12 @@ public:
     __non_rtti_object(const char * what_arg) : bad_typeid(what_arg) {}
 };
 
-#ifdef __RTTI_OLDNAMES
+#ifdef  __RTTI_OLDNAMES
 // Some synonyms for folks using older standard
 typedef type_info Type_info;
 typedef bad_cast Bad_cast;
 typedef bad_typeid Bad_typeid;
-#endif	// __RTTI_OLDNAMES
+#endif  // __RTTI_OLDNAMES
 
 
-#endif // _INC_TYPEINFO
+#endif  // _INC_TYPEINFO

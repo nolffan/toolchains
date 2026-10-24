@@ -1,49 +1,49 @@
 /***
 *varargs.h - XENIX style macros for variable argument functions
 *
-*	Copyright (c) 1985-1997, Microsoft Corporation. All rights reserved.
+*       Copyright (c) 1985-1997, Microsoft Corporation. All rights reserved.
 *
 *Purpose:
-*	This file defines XENIX style macros for accessing arguments of a
-*	function which takes a variable number of arguments.
-*	[System V]
+*       This file defines XENIX style macros for accessing arguments of a
+*       function which takes a variable number of arguments.
+*       [System V]
 *
 *       [Public]
 *
 ****/
 
-#if _MSC_VER > 1000
+#if     _MSC_VER > 1000
 #pragma once
 #endif
 
 #ifndef _INC_VARARGS
 #define _INC_VARARGS
 
-#if !defined(_WIN32) && !defined(_MAC)
+#if     !defined(_WIN32) && !defined(_MAC)
 #error ERROR: Only Mac or Win32 targets supported!
 #endif
 
 
-#ifdef	_MSC_VER
+#ifdef  _MSC_VER
 /*
  * Currently, all MS C compilers for Win32 platforms default to 8 byte
  * alignment.
  */
 #pragma pack(push,8)
-#endif	/* _MSC_VER */
+#endif  /* _MSC_VER */
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
-#if	__STDC__
+#if     __STDC__
 #error varargs.h incompatible with ANSI (use stdarg.h)
 #endif
 
 
 #ifndef _VA_LIST_DEFINED
 
-#ifdef _M_ALPHA
+#ifdef  _M_ALPHA
 typedef struct {
     char *a0;           /* pointer to first homed integer argument */
     int offset;         /* byte offset of next parameter */
@@ -56,7 +56,7 @@ typedef char *va_list;
 #endif
 
 
-#if	defined(_M_IX86)
+#if     defined(_M_IX86)
 
 /*
  * define a macro to compute the size of a type, variable or expression,
@@ -64,7 +64,7 @@ typedef char *va_list;
  * size as function argument (Intel architecture). Note that the macro
  * depends on sizeof(int) being a power of 2!
  */
-#define _INTSIZEOF(n)	 ( (sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
+#define _INTSIZEOF(n)    ( (sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
 
 #define va_dcl va_list va_alist;
 #define va_start(ap) ap = (va_list)&va_alist
@@ -72,7 +72,7 @@ typedef char *va_list;
 #define va_end(ap) ap = (va_list)0
 
 
-#elif	defined(_M_MRX000)	/* _MIPS_ */
+#elif   defined(_M_MRX000)      /* _MIPS_ */
 
 
 #define va_dcl int va_alist;
@@ -89,7 +89,7 @@ typedef char *va_list;
     +++++++++++++++++++++++++++++++++++++++++++ */
 
 
-#elif	defined(_M_ALPHA)
+#elif   defined(_M_ALPHA)
 
 /*
  * The Alpha compiler supports two builtin functions that are used to
@@ -116,7 +116,7 @@ extern void * __builtin_va_start(va_list, ...);
     )
 
 
-#elif defined(_M_PPC)
+#elif   defined(_M_PPC)
 
 /*
  * define a macro to compute the size of a type, variable or expression,
@@ -129,8 +129,8 @@ extern void * __builtin_va_start(va_list, ...);
 /* bytes that a type occupies in the argument list */
 #define _INTSIZEOF(n)   ( (sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
 /* return 'ap' adjusted for type 't' in arglist */
-#define	_ALIGNIT(ap,t) \
-	((((int)(ap))+(sizeof(t)<8?3:7)) & (sizeof(t)<8?~3:~7))
+#define _ALIGNIT(ap,t) \
+        ((((int)(ap))+(sizeof(t)<8?3:7)) & (sizeof(t)<8?~3:~7))
 
 #define va_dcl va_list va_alist;
 #define va_start(ap) ap = (va_list)&va_alist
@@ -141,7 +141,7 @@ extern void * __builtin_va_start(va_list, ...);
 
 /* A guess at the proper definitions for other platforms */
 
-#define _INTSIZEOF(n)	 ( (sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
+#define _INTSIZEOF(n)    ( (sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
 
 #define va_dcl va_list va_alist;
 #define va_start(ap) ap = (va_list)&va_alist
@@ -152,12 +152,12 @@ extern void * __builtin_va_start(va_list, ...);
 #endif
 
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#ifdef	_MSC_VER
+#ifdef  _MSC_VER
 #pragma pack(pop)
-#endif	/* _MSC_VER */
+#endif  /* _MSC_VER */
 
-#endif	/* _INC_VARARGS */
+#endif  /* _INC_VARARGS */

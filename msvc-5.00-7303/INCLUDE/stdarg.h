@@ -1,65 +1,65 @@
 /***
 *stdarg.h - defines ANSI-style macros for variable argument functions
 *
-*	Copyright (c) 1985-1997, Microsoft Corporation. All rights reserved.
+*       Copyright (c) 1985-1997, Microsoft Corporation. All rights reserved.
 *
 *Purpose:
-*	This file defines ANSI-style macros for accessing arguments
-*	of functions which take a variable number of arguments.
-*	[ANSI]
+*       This file defines ANSI-style macros for accessing arguments
+*       of functions which take a variable number of arguments.
+*       [ANSI]
 *
 *       [Public]
 *
 ****/
 
-#if _MSC_VER > 1000
+#if     _MSC_VER > 1000
 #pragma once
 #endif
 
 #ifndef _INC_STDARG
 #define _INC_STDARG
 
-#if !defined(_WIN32) && !defined(_MAC)
+#if     !defined(_WIN32) && !defined(_MAC)
 #error ERROR: Only Mac or Win32 targets supported!
 #endif
 
 
-#ifdef	_MSC_VER
+#ifdef  _MSC_VER
 /*
  * Currently, all MS C compilers for Win32 platforms default to 8 byte
  * alignment.
  */
 #pragma pack(push,8)
-#endif	/* _MSC_VER */
+#endif  /* _MSC_VER */
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
 
 
 #ifndef _VA_LIST_DEFINED
-#ifdef	_M_ALPHA
+#ifdef  _M_ALPHA
 typedef struct {
-	char *a0;	/* pointer to first homed integer argument */
-	int offset;	/* byte offset of next parameter */
+        char *a0;       /* pointer to first homed integer argument */
+        int offset;     /* byte offset of next parameter */
 } va_list;
 #else
-typedef char *	va_list;
+typedef char *  va_list;
 #endif
 #define _VA_LIST_DEFINED
 #endif
 
-#ifdef	_M_IX86
+#ifdef  _M_IX86
 
 
-#define _INTSIZEOF(n)	( (sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
+#define _INTSIZEOF(n)   ( (sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
 
-#define va_start(ap,v)	( ap = (va_list)&v + _INTSIZEOF(v) )
-#define va_arg(ap,t)	( *(t *)((ap += _INTSIZEOF(t)) - _INTSIZEOF(t)) )
-#define va_end(ap)	( ap = (va_list)0 )
+#define va_start(ap,v)  ( ap = (va_list)&v + _INTSIZEOF(v) )
+#define va_arg(ap,t)    ( *(t *)((ap += _INTSIZEOF(t)) - _INTSIZEOF(t)) )
+#define va_end(ap)      ( ap = (va_list)0 )
 
-#elif	defined(_M_MRX000)
+#elif   defined(_M_MRX000)
 
 
 /* Use these types and definitions if generating code for MIPS */
@@ -78,7 +78,7 @@ typedef char *	va_list;
     +++++++++++++++++++++++++++++++++++++++++++ */
 
 
-#elif	defined(_M_ALPHA)
+#elif   defined(_M_ALPHA)
 
 
 /* Use these types and definitions if generating code for ALPHA */
@@ -96,7 +96,7 @@ typedef char *	va_list;
 
 extern void * __builtin_va_start(va_list, ...);
 
-#ifdef	_CFRONT
+#ifdef  _CFRONT
 #define __builtin_isfloat(a) __builtin_alignof(a)
 #endif
 
@@ -111,53 +111,53 @@ extern void * __builtin_va_start(va_list, ...);
        ) \
     )
 
-#elif defined(_M_PPC)
+#elif   defined(_M_PPC)
 
 /* Microsoft C8 front end (used in Motorola Merged compiler) */
 /* bytes that a type occupies in the argument list */
 #define _INTSIZEOF(n)   ( (sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
 /* return 'ap' adjusted for type 't' in arglist */
-#define	_ALIGNIT(ap,t) \
-	((((int)(ap))+(sizeof(t)<8?3:7)) & (sizeof(t)<8?~3:~7))
+#define _ALIGNIT(ap,t) \
+        ((((int)(ap))+(sizeof(t)<8?3:7)) & (sizeof(t)<8?~3:~7))
 
 #define va_start(ap,v)  ( ap = (va_list)&v + _INTSIZEOF(v) )
 #define va_arg(ap,t)    ( *(t *)((ap = (char *) (_ALIGNIT(ap, t) + _INTSIZEOF(t))) - _INTSIZEOF(t)) )
 #define va_end(ap)      ( ap = (va_list)0 )
 
-#elif defined(_M_M68K)
-#define _INTSIZEOF(n)	( (sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
+#elif   defined(_M_M68K)
+#define _INTSIZEOF(n)   ( (sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
 
-#define va_start(ap,v)	( ap = (va_list)&v + (sizeof(v) < sizeof(int) ? sizeof(v) : _INTSIZEOF(v)) )
-#define va_arg(ap,t)	( *(t *)((ap += _INTSIZEOF(t)) - _INTSIZEOF(t)) )
-#define va_end(ap)	( ap = (va_list)0 )
+#define va_start(ap,v)  ( ap = (va_list)&v + (sizeof(v) < sizeof(int) ? sizeof(v) : _INTSIZEOF(v)) )
+#define va_arg(ap,t)    ( *(t *)((ap += _INTSIZEOF(t)) - _INTSIZEOF(t)) )
+#define va_end(ap)      ( ap = (va_list)0 )
 
-#elif defined(_M_MPPC)
-#define _INTSIZEOF(n)	( (sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
+#elif   defined(_M_MPPC)
+#define _INTSIZEOF(n)   ( (sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
 
-#define va_start(ap,v)	( ap = (va_list)&v + _INTSIZEOF(v) )
-#define va_arg(ap,t)	( *(t *)((ap += _INTSIZEOF(t)) - _INTSIZEOF(t)) )
-#define va_end(ap)	( ap = (va_list)0 )
+#define va_start(ap,v)  ( ap = (va_list)&v + _INTSIZEOF(v) )
+#define va_arg(ap,t)    ( *(t *)((ap += _INTSIZEOF(t)) - _INTSIZEOF(t)) )
+#define va_end(ap)      ( ap = (va_list)0 )
 
 #else
 
 /* A guess at the proper definitions for other platforms */
 
-#define _INTSIZEOF(n)	( (sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
+#define _INTSIZEOF(n)   ( (sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
 
-#define va_start(ap,v)	( ap = (va_list)&v + _INTSIZEOF(v) )
-#define va_arg(ap,t)	( *(t *)((ap += _INTSIZEOF(t)) - _INTSIZEOF(t)) )
-#define va_end(ap)	( ap = (va_list)0 )
+#define va_start(ap,v)  ( ap = (va_list)&v + _INTSIZEOF(v) )
+#define va_arg(ap,t)    ( *(t *)((ap += _INTSIZEOF(t)) - _INTSIZEOF(t)) )
+#define va_end(ap)      ( ap = (va_list)0 )
 
 
 #endif
 
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#ifdef	_MSC_VER
+#ifdef  _MSC_VER
 #pragma pack(pop)
-#endif	/* _MSC_VER */
+#endif  /* _MSC_VER */
 
-#endif	/* _INC_STDARG */
+#endif  /* _INC_STDARG */

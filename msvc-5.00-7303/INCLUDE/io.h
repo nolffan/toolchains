@@ -1,85 +1,58 @@
 /***
 *io.h - declarations for low-level file handling and I/O functions
 *
-*	Copyright (c) 1985-1997, Microsoft Corporation. All rights reserved.
+*       Copyright (c) 1985-1997, Microsoft Corporation. All rights reserved.
 *
 *Purpose:
-*	This file contains the function declarations for the low-level
-*	file handling and I/O functions.
+*       This file contains the function declarations for the low-level
+*       file handling and I/O functions.
 *
 *       [Public]
 *
 ****/
 
-#if _MSC_VER > 1000
+#if     _MSC_VER > 1000
 #pragma once
 #endif
 
 #ifndef _INC_IO
 #define _INC_IO
 
-#if !defined(_WIN32) && !defined(_MAC)
+#if     !defined(_WIN32) && !defined(_MAC)
 #error ERROR: Only Mac or Win32 targets supported!
 #endif
 
 
-#ifdef	_MSC_VER
+#ifdef  _MSC_VER
 /*
  * Currently, all MS C compilers for Win32 platforms default to 8 byte
  * alignment.
  */
 #pragma pack(push,8)
-#endif	/* _MSC_VER */
+#endif  /* _MSC_VER */
 
 #ifndef _POSIX_
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
-
-/* Define _CRTAPI1 (for compatibility with the NT SDK) */
-
-#ifndef _CRTAPI1
-#if	_MSC_VER >= 800 && _M_IX86 >= 300
-#define _CRTAPI1 __cdecl
-#else
-#define _CRTAPI1
-#endif
-#endif
-
-
-/* Define _CRTAPI2 (for compatibility with the NT SDK) */
-
-#ifndef _CRTAPI2
-#if	_MSC_VER >= 800 && _M_IX86 >= 300
-#define _CRTAPI2 __cdecl
-#else
-#define _CRTAPI2
-#endif
-#endif
 
 
 /* Define _CRTIMP */
 
 #ifndef _CRTIMP
-#ifdef	_NTSDK
-/* definition compatible with NT SDK */
-#define _CRTIMP
-#else	/* ndef _NTSDK */
-/* current definition */
-#ifdef	_DLL
+#ifdef  _DLL
 #define _CRTIMP __declspec(dllimport)
-#else	/* ndef _DLL */
+#else   /* ndef _DLL */
 #define _CRTIMP
-#endif	/* _DLL */
-#endif	/* _NTSDK */
-#endif	/* _CRTIMP */
+#endif  /* _DLL */
+#endif  /* _CRTIMP */
 
 
 /* Define __cdecl for non-Microsoft compilers */
 
-#if	( !defined(_MSC_VER) && !defined(__cdecl) )
+#if     ( !defined(_MSC_VER) && !defined(__cdecl) )
 #define __cdecl
 #endif
 
@@ -88,11 +61,11 @@ extern "C" {
 typedef unsigned short wchar_t;
 #define _WCHAR_T_DEFINED
 #endif
-#endif /* ndef _MAC */
+#endif  /* ndef _MAC */
 
 #ifndef _TIME_T_DEFINED
-typedef long time_t;		/* time value */
-#define _TIME_T_DEFINED 	/* avoid multiple def's of time_t */
+typedef long time_t;            /* time value */
+#define _TIME_T_DEFINED         /* avoid multiple def's of time_t */
 #endif
 
 #ifndef _FSIZE_T_DEFINED
@@ -105,22 +78,22 @@ typedef unsigned long _fsize_t; /* Could be 64 bits for Win32 */
 #ifndef _FINDDATA_T_DEFINED
 
 struct _finddata_t {
-    unsigned	attrib;
-    time_t	time_create;	/* -1 for FAT file systems */
-    time_t	time_access;	/* -1 for FAT file systems */
-    time_t	time_write;
-    _fsize_t	size;
-    char	name[260];
+    unsigned    attrib;
+    time_t      time_create;    /* -1 for FAT file systems */
+    time_t      time_access;    /* -1 for FAT file systems */
+    time_t      time_write;
+    _fsize_t    size;
+    char        name[260];
 };
 
-#if _INTEGRAL_MAX_BITS >= 64
+#if     _INTEGRAL_MAX_BITS >= 64
 struct _finddatai64_t {
-    unsigned	attrib;
-    time_t	time_create;	/* -1 for FAT file systems */
-    time_t	time_access;	/* -1 for FAT file systems */
-    time_t	time_write;
-    __int64	size;
-    char	name[260];
+    unsigned    attrib;
+    time_t      time_create;    /* -1 for FAT file systems */
+    time_t      time_access;    /* -1 for FAT file systems */
+    time_t      time_write;
+    __int64     size;
+    char        name[260];
 };
 #endif
 
@@ -130,22 +103,22 @@ struct _finddatai64_t {
 #ifndef _WFINDDATA_T_DEFINED
 
 struct _wfinddata_t {
-    unsigned	attrib;
-    time_t	time_create;	/* -1 for FAT file systems */
-    time_t	time_access;	/* -1 for FAT file systems */
-    time_t	time_write;
-    _fsize_t	size;
-    wchar_t	name[260];
+    unsigned    attrib;
+    time_t      time_create;    /* -1 for FAT file systems */
+    time_t      time_access;    /* -1 for FAT file systems */
+    time_t      time_write;
+    _fsize_t    size;
+    wchar_t     name[260];
 };
 
-#if _INTEGRAL_MAX_BITS >= 64
+#if     _INTEGRAL_MAX_BITS >= 64
 struct _wfinddatai64_t {
-    unsigned	attrib;
-    time_t	time_create;	/* -1 for FAT file systems */
-    time_t	time_access;	/* -1 for FAT file systems */
-    time_t	time_write;
-    __int64	size;
-    wchar_t	name[260];
+    unsigned    attrib;
+    time_t      time_create;    /* -1 for FAT file systems */
+    time_t      time_access;    /* -1 for FAT file systems */
+    time_t      time_write;
+    __int64     size;
+    wchar_t     name[260];
 };
 #endif
 
@@ -154,14 +127,14 @@ struct _wfinddatai64_t {
 
 /* File attribute constants for _findfirst() */
 
-#define _A_NORMAL	0x00	/* Normal file - No read/write restrictions */
-#define _A_RDONLY	0x01	/* Read only file */
-#define _A_HIDDEN	0x02	/* Hidden file */
-#define _A_SYSTEM	0x04	/* System file */
-#define _A_SUBDIR	0x10	/* Subdirectory */
-#define _A_ARCH 	0x20	/* Archive file */
+#define _A_NORMAL       0x00    /* Normal file - No read/write restrictions */
+#define _A_RDONLY       0x01    /* Read only file */
+#define _A_HIDDEN       0x02    /* Hidden file */
+#define _A_SYSTEM       0x04    /* System file */
+#define _A_SUBDIR       0x10    /* Subdirectory */
+#define _A_ARCH         0x20    /* Archive file */
 
-#endif /* ndef _MAC */
+#endif  /* ndef _MAC */
 
 /* function prototypes */
 
@@ -179,7 +152,7 @@ _CRTIMP long __cdecl _filelength(int);
 _CRTIMP long __cdecl _findfirst(const char *, struct _finddata_t *);
 _CRTIMP int __cdecl _findnext(long, struct _finddata_t *);
 _CRTIMP int __cdecl _findclose(long);
-#endif /* ndef _MAC */
+#endif  /* ndef _MAC */
 _CRTIMP int __cdecl _isatty(int);
 _CRTIMP int __cdecl _locking(int, int, long);
 _CRTIMP long __cdecl _lseek(int, long, int);
@@ -187,7 +160,7 @@ _CRTIMP char * __cdecl _mktemp(char *);
 _CRTIMP int __cdecl _open(const char *, int, ...);
 #ifndef _MAC
 _CRTIMP int __cdecl _pipe(int *, unsigned int, int);
-#endif /* ndef _MAC */
+#endif  /* ndef _MAC */
 _CRTIMP int __cdecl _read(int, void *, unsigned int);
 _CRTIMP int __cdecl remove(const char *);
 _CRTIMP int __cdecl rename(const char *, const char *);
@@ -198,7 +171,7 @@ _CRTIMP int __cdecl _umask(int);
 _CRTIMP int __cdecl _unlink(const char *);
 _CRTIMP int __cdecl _write(int, const void *, unsigned int);
 
-#if _INTEGRAL_MAX_BITS >= 64
+#if     _INTEGRAL_MAX_BITS >= 64
 _CRTIMP __int64 __cdecl _filelengthi64(int);
 _CRTIMP long __cdecl _findfirsti64(const char *, struct _finddatai64_t *);
 _CRTIMP int __cdecl _findnexti64(long, struct _finddatai64_t *);
@@ -222,50 +195,22 @@ _CRTIMP int __cdecl _wopen(const wchar_t *, int, ...);
 _CRTIMP int __cdecl _wsopen(const wchar_t *, int, int, ...);
 _CRTIMP wchar_t * __cdecl _wmktemp(wchar_t *);
 
-#if _INTEGRAL_MAX_BITS >= 64
+#if     _INTEGRAL_MAX_BITS >= 64
 _CRTIMP long __cdecl _wfindfirsti64(const wchar_t *, struct _wfinddatai64_t *);
 _CRTIMP int __cdecl _wfindnexti64(long, struct _wfinddatai64_t *);
 #endif
 
 #define _WIO_DEFINED
 #endif
-#endif /* ndef _MAC */
+#endif  /* ndef _MAC */
 
 
 _CRTIMP long __cdecl _get_osfhandle(int);
 _CRTIMP int __cdecl _open_osfhandle(long, int);
 
-#if	!__STDC__
+#if     !__STDC__
 
 /* Non-ANSI names for compatibility */
-
-#ifdef	_NTSDK
-
-#ifndef __cplusplus
-#define access      _access
-#define chmod       _chmod
-#define chsize      _chsize
-#define close       _close
-#define creat       _creat
-#define dup         _dup
-#define dup2        _dup2
-#define eof         _eof
-#define filelength  _filelength
-#define isatty      _isatty
-#define locking     _locking
-#define lseek       _lseek
-#define mktemp      _mktemp
-#define open        _open
-#define read        _read
-#define setmode     _setmode
-#define sopen       _sopen
-#define tell        _tell
-#define umask       _umask
-#define unlink      _unlink
-#define write       _write
-#endif	/* __cplusplus */
-
-#else	/* ndef _NTSDK */
 
 _CRTIMP int __cdecl access(const char *, int);
 _CRTIMP int __cdecl chmod(const char *, int);
@@ -289,18 +234,16 @@ _CRTIMP int __cdecl umask(int);
 _CRTIMP int __cdecl unlink(const char *);
 _CRTIMP int __cdecl write(int, const void *, unsigned int);
 
-#endif	/* _NTSDK */
+#endif  /* __STDC__ */
 
-#endif	/* __STDC__ */
-
-#ifdef __cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* _POSIX_ */
+#endif  /* _POSIX_ */
 
-#ifdef	_MSC_VER
+#ifdef  _MSC_VER
 #pragma pack(pop)
-#endif	/* _MSC_VER */
+#endif  /* _MSC_VER */
 
-#endif	/* _INC_IO */
+#endif  /* _INC_IO */
