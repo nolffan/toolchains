@@ -4,6 +4,7 @@
 #   bash toolchain/fetch.sh [--force] [msvc-5.00-7303] [msvc-7.10-3077] [msvc-6.00-9782] [msvc-6.00-8168] [msvc-6.00-8447]
 #                           [msvc-6.00-8966] [msvc-6.00-9044] [dxsdk-8.1] [icl-4.0] [icl-4.5] [icl-5.0.1] [icl-6.0.078]
 #                           [icl-8.0.046] [icl-9.0.022] [directmusic-5.3.1.904]
+#                           [maxsdk-3.0] [maxsdk-4.0] [maya-3.0-devkit] [maya-4.0-devkit]
 #
 # `make toolchain` runs this in the build container, which has every tool it
 # needs (curl, bsdtar, 7z, cabextract, unar, unshield, python3). With no names
@@ -75,6 +76,20 @@ ICL5_HDR_URL="$ICL5_DIR/compiler/icl/data1.hdr"
 ICL5_HDR_SHA=1a8e0f5cce8694ef209296cb55fc5decd2a0bff07548513718fc06cc4d6d81bb
 ICL5_LIC_URL="$ICL5_DIR/WINDOW~1.LIC"
 ICL5_LIC_SHA=c7af001728c3e53c6e945120fb80ba347d9cd78a697a2a2776419f45bd7d09ad
+# The 3ds Max 3 and 4 SDKs and the Maya 3.0 and 4.0 developer kits, for the
+# LithTech plug-ins built against them (talon: AvP2 Tools Update 2's
+# *30/*40 exporters). The Max SDKs are archive.org's copies of the SDK
+# folders (3.0 as shipped; 4.0 from the 4.2 SDK, see build_maxsdk40); the
+# Maya kits are the "Developer Include Files" and "Developer Libraries"
+# file groups of the Windows install CDs.
+MAXSDK30_URL='https://archive.org/download/3d-studio-max-sdks/Max3sdk.zip'
+MAXSDK30_SHA=a2c3419fad899410cf35cff1291f4b3d693e83bede8f859b2f26982982a54c14
+MAXSDK42_URL='https://archive.org/download/maxsdk-4.2.0.85/maxsdk.zip'
+MAXSDK42_SHA=731b0a01d48f0a2053a0fd5c69fe5a9e5d8dcf00e72621f88436804f6e4cc14c
+MAYA30_URL='https://archive.org/download/maya_30/maya30.iso'
+MAYA30_SHA=1de79a8159ad2cca9705920298b2f7852a81848df538aaf6384df3b4dbc9216b
+MAYA40_URL='https://archive.org/download/maya40/maya40.iso'
+MAYA40_SHA=ac25cbb58e4a4730e4cc53c47003ffd61cd7d508a39f2976aaa4905353bc9efe
 # A portable VC6 SP6 tree, pinned to one commit. GitHub does not promise that
 # its generated tarballs are byte-stable, so the archive itself is not
 # pinned; the extracted tree is, by its digest below.
@@ -98,8 +113,22 @@ declare -A TREE_SHA=(
     [icl-8.0.046]=733c6bbded14217994057c2eb50d5e3832c43f5466f2da6b4b0976f98929db4d
     [icl-9.0.022]=161d54d0cec4b79dbc0022763f6bc00df4d2bf314679aa61bef78c2d130a991c
     [directmusic-5.3.1.904]=f9ebf333a683b7c9e7df7b94ab7351a38a8f5e1eab72468899d6be199623a1be
+    [maxsdk-3.0]=8e3eaf80b7d08568c0844d5245526d19493c61c9369d02b6be208b521532b9be
+    [maxsdk-4.0]=e37aa9b6ced8c59958d5b6f902d6d74a1450b15a49c039cf0a2ba89ea48b63c1
+    [maya-3.0-devkit]=d998478e313217a6570854fa757b7cc363b56e12bd34b6a7f5c8b49bbde39287
+    [maya-4.0-devkit]=6130eec5be44aa3b8d18106d661c1c042f8500afba266fcb8ab0e2e678f5f49c
 )
-ALL=(msvc-5.00-7303 msvc-7.10-3077 msvc-6.00-9782 msvc-6.00-8168 msvc-6.00-8447 msvc-6.00-8966 msvc-6.00-9044 dxsdk-8.1 icl-4.0 icl-4.5 icl-5.0.1 icl-6.0.078 icl-8.0.046 icl-9.0.022 directmusic-5.3.1.904)
+ALL=(msvc-5.00-7303 msvc-7.10-3077 msvc-6.00-9782 msvc-6.00-8168 msvc-6.00-8447 msvc-6.00-8966 msvc-6.00-9044 dxsdk-8.1 icl-4.0 icl-4.5 icl-5.0.1 icl-6.0.078 icl-8.0.046 icl-9.0.022 directmusic-5.3.1.904 maxsdk-3.0 maxsdk-4.0 maya-3.0-devkit maya-4.0-devkit)
+# What each tree's build needs beyond curl, sha256sum and python3.
+declare -A NEEDS=(
+    [msvc-5.00-7303]="bsdtar cabextract"
+    [msvc-7.10-3077]="bsdtar 7z cabextract unar unshield" [msvc-6.00-9782]="" [msvc-6.00-8168]="bsdtar 7z cabextract unar unshield"
+    [msvc-6.00-8447]="bsdtar 7z cabextract unar unshield" [msvc-6.00-8966]="bsdtar 7z cabextract unar unshield"
+    [msvc-6.00-9044]="bsdtar 7z cabextract unar unshield" [dxsdk-8.1]="7z" [icl-4.0]="7z unar unshield"
+    [icl-4.5]="7z cabextract unar unshield" [icl-5.0.1]="unshield" [icl-6.0.078]="7z unshield" [icl-8.0.046]="7z"
+    [icl-9.0.022]="7z" [directmusic-5.3.1.904]="7z cabextract"
+    [maxsdk-3.0]="" [maxsdk-4.0]="" [maya-3.0-devkit]="unshield" [maya-4.0-devkit]="unshield"
+)
 
 die() { echo "toolchain: $*" >&2; exit 1; }
 
@@ -398,6 +427,59 @@ build_dxsdk81() {
     rm -rf "$x"
 }
 
+# A Max SDK zip's Include and Lib folders as include/ and lib/.
+take_maxsdk() {   # take_maxsdk <zip> <top folder in the zip> <out>
+    python3 -I - "$1" "$2" "$3" <<'PY'
+import os, sys, zipfile
+z, top, out = sys.argv[1:]
+for info in zipfile.ZipFile(z).infolist():
+    parts = info.filename.replace('\\', '/').split('/')
+    if len(parts) < 3 or parts[0].lower() != top.lower() or info.is_dir():
+        continue
+    sub = parts[1].lower()
+    if sub not in ('include', 'lib'):
+        continue
+    dest = os.path.join(out, sub, *parts[2:])
+    os.makedirs(os.path.dirname(dest), exist_ok=True)
+    with zipfile.ZipFile(z).open(info) as f, open(dest, 'wb') as o:
+        o.write(f.read())
+PY
+}
+
+# 3ds Max 3 (MAX_RELEASE 3000, API 7).
+build_maxsdk30() {
+    fetch Max3sdk.zip "$MAXSDK30_URL" "$MAXSDK30_SHA"
+    take_maxsdk "$DL/Max3sdk.zip" Max3sdk "$1"
+}
+
+# 3ds Max 4: no copy of the 4.0 SDK has turned up, so the 4.2 SDK (2001-05),
+# which keeps 4.0's plug-in API (MAX_API_NUM 8; 4.x plug-ins are binary
+# compatible), with plugapi.h's MAX_RELEASE put back to 4.0's 4000: what a
+# plug-in's LibVersion() returns (Update 2's *40 plug-ins: 0x0FA00800).
+build_maxsdk40() {
+    fetch maxsdk-4.2.0.85.zip "$MAXSDK42_URL" "$MAXSDK42_SHA"
+    take_maxsdk "$DL/maxsdk-4.2.0.85.zip" maxsdk "$1"
+    local h="$1/include/plugapi.h"
+    grep -q '^#define MAX_RELEASE  4200' "$h" || die "maxsdk-4.0: plugapi.h is not the 4.2 one expected"
+    sed -i 's|^#define MAX_RELEASE  4200 .*|#define MAX_RELEASE  4000        // toolchain/fetch.sh: 4.2 SDK, 4.0 release (was 4200)|' "$h"
+}
+
+# A Maya Windows CD's developer kit: the InstallShield cabinets' include and
+# library file groups.
+build_mayadevkit() {   # build_mayadevkit <out> <iso> <url> <sha> <folder of DATA1.CAB on the CD>
+    local out="$1" x="$WORK/maya"
+    fetch "$2" "$3" "$4"
+    rm -rf "$x"; mkdir -p "$x/cd" "$out"
+    python3 -I "$TC/iso.py" x "$DL/$2" "$x/cd" "$5" >/dev/null
+    local cab; cab=$(find "$x/cd" -maxdepth 2 -iname data1.cab | head -1)
+    [ -n "$cab" ] || die "$2: no DATA1.CAB"
+    unshield -d "$x/files" -g 'Developer Include Files' x "$cab" >/dev/null
+    unshield -d "$x/files" -g 'Developer Libraries' x "$cab" >/dev/null
+    mv "$x/files/Developer_Include_Files" "$out/include"
+    mv "$x/files/Developer_Libraries" "$out/lib"
+    rm -rf "$x"
+}
+
 # VC6 SP6 (c2 12.00.9782) as a portable Common/ + VC98/ tree.
 build_9782() {
     local out="$1" x="$WORK/9782"
@@ -616,6 +698,10 @@ build() {
         icl-8.0.046)    build_icl8 "$tmp" ;;
         icl-9.0.022)    build_icl9 "$tmp" ;;
         directmusic-5.3.1.904) build_directmusic "$tmp" ;;
+        maxsdk-3.0)     build_maxsdk30 "$tmp" ;;
+        maxsdk-4.0)     build_maxsdk40 "$tmp" ;;
+        maya-3.0-devkit) build_mayadevkit "$tmp" maya30.iso "$MAYA30_URL" "$MAYA30_SHA" MAYA ;;
+        maya-4.0-devkit) build_mayadevkit "$tmp" maya40.iso "$MAYA40_URL" "$MAYA40_SHA" "" ;;
     esac
     got=$(tree_sha "$tmp")
     [ "$got" = "${TREE_SHA[$name]}" ] \
@@ -630,14 +716,16 @@ for a in "$@"; do
     case "$a" in
         --force) FORCE=1 ;;
         -h|--help) sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
-        msvc-5.00-7303|msvc-7.10-3077|msvc-6.00-9782|msvc-6.00-8168|msvc-6.00-8447|msvc-6.00-8966|msvc-6.00-9044|dxsdk-8.1|icl-4.0|icl-4.5|icl-5.0.1|icl-6.0.078|icl-8.0.046|icl-9.0.022|directmusic-5.3.1.904)
+        msvc-5.00-7303|msvc-7.10-3077|msvc-6.00-9782|msvc-6.00-8168|msvc-6.00-8447|msvc-6.00-8966|msvc-6.00-9044|dxsdk-8.1|icl-4.0|icl-4.5|icl-5.0.1|icl-6.0.078|icl-8.0.046|icl-9.0.022|directmusic-5.3.1.904|maxsdk-3.0|maxsdk-4.0|maya-3.0-devkit|maya-4.0-devkit)
             targets+=("$a") ;;
         *) die "unknown argument: $a (try --help)" ;;
     esac
 done
 [ ${#targets[@]} -gt 0 ] || targets=("${ALL[@]}")
 
-for tool in curl sha256sum bsdtar 7z cabextract unar unshield python3; do
+need="curl sha256sum python3"
+for t in "${targets[@]}"; do need="$need ${NEEDS[$t]}"; done
+for tool in $need; do
     command -v "$tool" >/dev/null || die "$tool is required (make toolchain runs this in the build container, which has it)"
 done
 mkdir -p "$WORK"
