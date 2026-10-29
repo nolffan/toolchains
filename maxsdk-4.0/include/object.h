@@ -115,7 +115,7 @@ class View : public InterfaceServer{
 		virtual BOOL CheckForRenderAbort() { return FALSE; }
 
 		// Generic expansion function
-		virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
+		virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
 
 		View() { projType = -1; flags = RENDER_MESH_DISPLACEMENT_MAP; } // projType not set, this is to deal with older renderers.
 	};

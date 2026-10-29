@@ -199,7 +199,7 @@ class BezierShape : public BaseInterfaceServer {
 
 		// CAL-03/25/01: Remove these friend declaration once their access to area selection
 		//				 variables are replaced by the new APIs.
-		friend INT_PTR CALLBACK SplineSelectDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
+		friend int CALLBACK SplineSelectDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
 
 	public:
 		

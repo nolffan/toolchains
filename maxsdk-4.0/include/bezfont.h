@@ -116,9 +116,9 @@ class AvailableFont {
 	public:
 		BezFontInfo info;
 		DllData *dllData;
-		INT_PTR dllIndex;	// The index of the DLL which provides this font (in BezFontDllTab)
+		int dllIndex;	// The index of the DLL which provides this font (in BezFontDllTab)
 		AvailableFont() { dllData = NULL; }
-		AvailableFont(BezFontInfo &i, INT_PTR di, DllData *dd=NULL) { info=i; dllIndex=di; dllData=dd; }
+		AvailableFont(BezFontInfo &i, int di, DllData *dd=NULL) { info=i; dllIndex=di; dllData=dd; }
 		~AvailableFont() { if(dllData) delete dllData; }
 	};
 

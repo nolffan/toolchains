@@ -112,11 +112,11 @@ public:
 	void ZeroCount() { if (th) th->count=0; }
 	void SetCount(int n) { TBSetCount((TabHdr **)&th, n, sizeof(T)); }
 
-	T& operator[](const INT_PTR i) const {       // access ith entry.
+	T& operator[](const int i) const {       // access ith entry.
 			// WIN64 Cleanup: Shuler
 		assert(th&&(i<th->count)); return(th->data[i]); 
 		}
-	T* Addr(const INT_PTR i) const {             // use with caution  
+	T* Addr(const int i) const {             // use with caution  
 			// WIN64 Cleanup: Shuler
 		assert(th&&(i<th->count)); return(&th->data[i]); 
 		}

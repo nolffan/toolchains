@@ -50,12 +50,12 @@ typedef unsigned int uintptr_t;
 // These types are used to fix the wrong
 // UDM typedefs in MSVC++ 6.0. Use global replace
 // to get rid of them for MSVC++ 7.0.
-typedef int INT_PTR_MSVC70;		// becomes INT_PTR
-typedef unsigned int UINT_PTR_MSVC70;	// becomes UINT_PTR
+typedef int INT_PTR_MSVC70;		// becomes int
+typedef unsigned int UINT_PTR_MSVC70;	// becomes unsigned int
 #else
 // Even if we're using the platform SDK - still need these
-typedef int INT_PTR_MSVC70;		// becomes INT_PTR
-typedef unsigned int UINT_PTR_MSVC70;	// becomes UINT_PTR
+typedef int INT_PTR_MSVC70;		// becomes int
+typedef unsigned int UINT_PTR_MSVC70;	// becomes unsigned int
 typedef unsigned int uintptr_t;
 #endif
 
@@ -66,8 +66,8 @@ typedef unsigned int uintptr_t;
 // These types allow progress on Win64 port
 // without breaking WIN32.
 // Get rid of them for MSVC++ 7.0.
-typedef INT_PTR INT_PTR_MSVC70;
-typedef UINT_PTR UINT_PTR_MSVC70;
+typedef int INT_PTR_MSVC70;
+typedef unsigned int UINT_PTR_MSVC70;
 
 #endif WIN64
 

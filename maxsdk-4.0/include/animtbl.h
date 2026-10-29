@@ -1220,7 +1220,7 @@ CoreExport int GetMotionCaptureINISetting(int ID);
 CoreExport void SetMotionCaptureINISetting(int ID, int val);
 
 // CoreExecute: generic expansion capability
-CoreExport INT_PTR CoreExecute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0);
+CoreExport int CoreExecute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0);
 
 #endif // _ANIMTBL_H_
 

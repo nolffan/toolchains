@@ -568,7 +568,7 @@ class ClassDesc {
 		virtual void			BeginEditParams(IObjParam *ip, ReferenceMaker* obj, ULONG flags, Animatable *prev) { }
 		virtual void			EndEditParams(IObjParam *ip, ReferenceMaker* obj, ULONG flags, Animatable *prev) { }
 		virtual void			InvalidateUI(ParamBlockDesc2* pbd) { }
-		CoreExport virtual TCHAR* GetRsrcString(INT_PTR id);
+		CoreExport virtual TCHAR* GetRsrcString(int id);
 		// automatic ParamBlock construction
 		virtual void			MakeAutoParamBlocks(ReferenceMaker* owner) { }
 		// access automatically-maintained ParamMaps, by simple index or by associated ParamBlockDesc
@@ -599,7 +599,7 @@ class ClassDesc {
 		virtual Class_ID		SubClassID() { return Class_ID(); }
 
 		// Generic expansion function
-		virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
+		virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
 	};
 
 // Create instance of the specified class

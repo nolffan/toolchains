@@ -236,8 +236,8 @@ public:
 	// from ClassDesc2
 	const TCHAR*	InternalName() { return pc->InternalName(); }
 	HINSTANCE		HInstance() { return pc->HInstance(); }
-	TCHAR*			GetString(INT_PTR id) { return id != 0 ? (TCHAR*)id : NULL; } // resIDs are actual string ptrs in msplugins...
-	TCHAR*			GetRsrcString(INT_PTR id) { return id != 0 ? (TCHAR*)id : NULL; }
+	TCHAR*			GetString(int id) { return id != 0 ? (TCHAR*)id : NULL; } // resIDs are actual string ptrs in msplugins...
+	TCHAR*			GetRsrcString(int id) { return id != 0 ? (TCHAR*)id : NULL; }
 
 	// local 
 	void			StartTool(IObjCreate *iob);   // start up scripted create tool

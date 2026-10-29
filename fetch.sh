@@ -114,9 +114,9 @@ declare -A TREE_SHA=(
     [icl-9.0.022]=161d54d0cec4b79dbc0022763f6bc00df4d2bf314679aa61bef78c2d130a991c
     [directmusic-5.3.1.904]=f9ebf333a683b7c9e7df7b94ab7351a38a8f5e1eab72468899d6be199623a1be
     [maxsdk-3.0]=8e3eaf80b7d08568c0844d5245526d19493c61c9369d02b6be208b521532b9be
-    [maxsdk-4.0]=e37aa9b6ced8c59958d5b6f902d6d74a1450b15a49c039cf0a2ba89ea48b63c1
-    [maya-3.0-devkit]=d998478e313217a6570854fa757b7cc363b56e12bd34b6a7f5c8b49bbde39287
-    [maya-4.0-devkit]=6130eec5be44aa3b8d18106d661c1c042f8500afba266fcb8ab0e2e678f5f49c
+    [maxsdk-4.0]=612a2e56a1970c535ef6a97c03e83b9e3ac59ad9bde04fba798b6cad52c69af1
+    [maya-3.0-devkit]=f48a4cff2fdd7d940376ed22ece6f7657e00d13fd0a77aa3efaad8bd9b392f88
+    [maya-4.0-devkit]=a8c95d7e5bd252520ee8a3f5354a5390e894fbc983b62a5082a3651d514d3581
 )
 ALL=(msvc-5.00-7303 msvc-7.10-3077 msvc-6.00-9782 msvc-6.00-8168 msvc-6.00-8447 msvc-6.00-8966 msvc-6.00-9044 dxsdk-8.1 icl-4.0 icl-4.5 icl-5.0.1 icl-6.0.078 icl-8.0.046 icl-9.0.022 directmusic-5.3.1.904 maxsdk-3.0 maxsdk-4.0 maya-3.0-devkit maya-4.0-devkit)
 # What each tree's build needs beyond curl, sha256sum and python3.
@@ -462,6 +462,14 @@ build_maxsdk40() {
     local h="$1/include/plugapi.h"
     grep -q '^#define MAX_RELEASE  4200' "$h" || die "maxsdk-4.0: plugapi.h is not the 4.2 one expected"
     sed -i 's|^#define MAX_RELEASE  4200 .*|#define MAX_RELEASE  4000        // toolchain/fetch.sh: 4.2 SDK, 4.0 release (was 4200)|' "$h"
+    # The 4.2 headers spell some parameters and returns INT_PTR / UINT_PTR
+    # (ClassDesc::GetRsrcString, MaxMsgBox, ...), which the Platform SDK its
+    # libraries were built with defines as int / unsigned int and VC6's own
+    # basetsd.h as long / unsigned long: under VC6 they mangle as long and
+    # miss core.lib's (and the 4.0 core.dll's) exports. Spelled as the 4.2
+    # build saw them (udmia64.h's INT_PTR_MSVC70 is the same fix, applied
+    # where Discreet remembered to).
+    find "$1/include" -type f -exec sed -i -E 's/\bUINT_PTR\b/unsigned int/g; s/\bINT_PTR\b/int/g' {} +
 }
 
 # A Maya Windows CD's developer kit: the InstallShield cabinets' include and
@@ -475,7 +483,8 @@ build_mayadevkit() {   # build_mayadevkit <out> <iso> <url> <sha> <folder of DAT
     [ -n "$cab" ] || die "$2: no DATA1.CAB"
     unshield -d "$x/files" -g 'Developer Include Files' x "$cab" >/dev/null
     unshield -d "$x/files" -g 'Developer Libraries' x "$cab" >/dev/null
-    mv "$x/files/Developer_Include_Files" "$out/include"
+    mkdir -p "$out/include"   # as Maya installs them: include/maya/*.h (they #include <maya/...>)
+    mv "$x/files/Developer_Include_Files" "$out/include/maya"
     mv "$x/files/Developer_Libraries" "$out/lib"
     rm -rf "$x"
 }

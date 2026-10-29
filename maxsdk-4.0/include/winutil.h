@@ -138,7 +138,7 @@ CoreExport void CustListDrawItem(HWND hList,WPARAM wParam, LPARAM lParam,DWORD f
 // is non-NULL, then exRet will have MAX_MB_DONTSHOWAGAIN set if that checkbox was
 // checked by the user.
 
-CoreExport INT_PTR MaxMsgBox(HWND hWnd, LPCTSTR lpText, LPCTSTR lpCaption, UINT type, UINT exType=0, DWORD *exRet=NULL);
+CoreExport int MaxMsgBox(HWND hWnd, LPCTSTR lpText, LPCTSTR lpCaption, UINT type, UINT exType=0, DWORD *exRet=NULL);
 			// WIN64 Cleanup: Shuler
 
 /**********************************************************************

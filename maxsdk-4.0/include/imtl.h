@@ -221,7 +221,7 @@ class IMtlParams : public InterfaceServer {
 	virtual IRollupWindow *GetMtlEditorRollup()=0;
 
 	// Generic expansion function
-	virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
+	virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
 	};
 
 class ParamDlg;
@@ -230,7 +230,7 @@ class Texmap;
 class RenderData : public InterfaceServer {
 	public:
 		virtual void DeleteThis() {delete this;/*should be pure virtual*/}
-		virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0;} 
+		virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0;} 
 	};
 
 class LightDesc : public RenderData {
@@ -503,7 +503,7 @@ public:
 	virtual FILE* DebugFile() { return NULL; }
 
 	// Generic expansion function
-	virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
+	virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
 };
 
 
@@ -632,7 +632,7 @@ class ShadeContext : public InterfaceServer {
 	virtual void PutCache(Texmap *map, const Point3 &p){}
 	virtual void TossCache(Texmap *map) {}
 	// Generic expansion function
-	virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
+	virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
 
 	// These are used to prevent self shadowing by volumetric lights
 	LightDesc *GetAtmosSkipLight() { return atmosSkipLight; }
@@ -959,7 +959,7 @@ class ParamDlg : public InterfaceServer {
 		virtual int FindSubTexFromHWND(HWND hwnd){ return -1;} 
 		virtual int FindSubMtlFromHWND(HWND hwnd){ return -1;} 
 		// Generic expansion function
-		virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
+		virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
 
 	};
 

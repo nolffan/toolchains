@@ -97,7 +97,7 @@ class GBufReader  : public InterfaceServer {
 	virtual BOOL ModifyAllData(GBufData *data)=0; // 1= success;  0= fail
 	virtual void DeleteThis()=0;
 	// Generic expansion function
-	virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
+	virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
 	};	
 
 
@@ -113,7 +113,7 @@ class GBufWriter : public InterfaceServer {
 	virtual BOOL EndLine()=0;                 // 1=success   0=fail ( Just call after every line)
 	virtual void DeleteThis()=0;
 	// Generic expansion function
-	virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
+	virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
 	};	
 
 class GBuffer : public InterfaceServer {
@@ -159,7 +159,7 @@ class GBuffer : public InterfaceServer {
 
 	// Generic expansion function
 	// JH 11/17/00 Now deriving from InterfaceServer. Extesibility via GetInterface()
-	//virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
+	//virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
 
 	};
 

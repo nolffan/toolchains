@@ -28,7 +28,7 @@ class PostLoadCallback : public InterfaceServer {
 	virtual void proc(ILoad *iload)=0;
 	// Lower priorities are run first-- allowable values {0..10}: 0 is reserved for ParamBlock2PLCB & ParamBlockPLCB 
 	virtual int Priority() { return 5; }  
-	virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; }
+	virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; }
 	};
 
 // CCJ - 9.15.00
@@ -83,7 +83,7 @@ class ISave : public InterfaceServer {
 		// <JBW> get a load ref id for the given RefMaker's ClassDesc in the ClassDirectory stream
 		virtual USHORT GetClassDescID(ReferenceMaker* rm) { return NO_CLASSDESC_ID_RETURNED; }
 
-		virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; }
+		virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; }
 		};
 
 
@@ -168,7 +168,7 @@ class ILoad : public InterfaceServer {
 		// companion to ISave::GetClassDescID() for saving & loading ClassDesc references
 		virtual ClassDesc* GetClassDesc(USHORT refID) { return NULL; }
 
-		virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; }
+		virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; }
 
 		// CCJ 10.16.00
 		// Max version and build number used to save the file (or 0 if file is pre R4)

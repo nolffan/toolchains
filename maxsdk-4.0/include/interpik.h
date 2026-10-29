@@ -183,7 +183,7 @@ class JointDlgData {
 	};
 
 // A window proc for handling joint parameters.
-CoreExport INT_PTR CALLBACK JointParamDlgProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam);
+CoreExport int CALLBACK JointParamDlgProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam);
 
 
 // Handles the IK functions for all types of point3 and quat key frame controllers.

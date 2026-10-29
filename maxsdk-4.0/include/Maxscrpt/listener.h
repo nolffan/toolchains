@@ -98,8 +98,8 @@ struct edit_window
 	int			    click_at[CLICK_STACK_SIZE];
 	bool			editing;
 
-	INT_PTR	new_rollout();	
-	INT_PTR	edit_rollout();	
+	int	new_rollout();	
+	int	edit_rollout();	
 };
 
 #endif

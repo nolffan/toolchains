@@ -1566,7 +1566,7 @@ class Bitmap : public BaseInterfaceServer {
 	  BMMExport BOOL IsAutonomousVFB();
 
  	  // Generic expansion function
-	  BMMExport INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0); 
+	  BMMExport int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0); 
 
 	  DWORD GetModifyID() { return modifyID; }
 	  void SetModifyID(DWORD m) { modifyID = m; }
@@ -1834,7 +1834,7 @@ class BitmapManager : public InterfaceServer{
 #define BMM_RETRIEVE_GEOREF_DATA 1 // Used in VIZ only; arg1: const TCHAR*; arg2: GeoTableItem**; arg3: not used
 
 	  // Generic expansion function
-	  virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0)=0; 
+	  virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0)=0; 
 
 	  virtual void BeginSavingLoadErrorFiles()=0;  // --Begin accumulating a list of files that didn't load,
 	  											   // and don't put up load errors in the meantime.
@@ -1859,7 +1859,7 @@ extern BMMExport BYTE			BMMClosestColor		( BMM_Color_64 *color,BMM_Color_48 *pal
 
 extern BMMExport void			OpenBMM				( BMMInterface *i );
 extern BMMExport void			CloseBMM			( );
-extern INT_PTR CALLBACK	BMMGammaDlgProc		(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam);
+extern int CALLBACK	BMMGammaDlgProc		(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam);
 				// WIN64 Cleanup: Martell
 extern           void            ExtractExtension	( TCHAR *string, TCHAR *ext );
 

@@ -24,7 +24,7 @@ typedef struct						/* secondary extent struct			*/
 #define VALUE_IS_OBJECT	0x0002
 
 int	default_eq_fn(void* key1, void* key2);  /* default comparator & hash fns */
-INT_PTR default_hash_fn(void* key);
+int default_hash_fn(void* key);
 
 class HashTabMapper;
 
@@ -36,7 +36,7 @@ class HashTable : public Value
 	size_t		size;				/* table size						*/
 	int			n_entries;			/* no. entries in primary extent	*/
 	int			(*eq_fn)(void*, void*); /* key equivalence function		*/
-	INT_PTR			(*hash_fn)(void*);	/* key hgashing function			*/
+	int			(*hash_fn)(void*);	/* key hgashing function			*/
 				// Win64 Cleanup: Shuler
 	int			cursor;				/* cursors used for sequencing...	*/
 	int			secondCursor;			
@@ -48,12 +48,12 @@ class HashTable : public Value
 	static CRITICAL_SECTION hash_update;	// for syncing allocation hashtable updates
 
 public:
-	ScripterExport HashTable(size_t primary_size, int (*key_eq_fn)(void*, void*), INT_PTR (*key_hash_fn)(void*), int flags);
+	ScripterExport HashTable(size_t primary_size, int (*key_eq_fn)(void*, void*), int (*key_hash_fn)(void*), int flags);
 				// Win64 Cleanup: Shuler
 				HashTable() { init(17, default_eq_fn, default_hash_fn, KEY_IS_OBJECT + VALUE_IS_OBJECT); }
 				HashTable(size_t primary_size) { init(primary_size, default_eq_fn, default_hash_fn, KEY_IS_OBJECT + VALUE_IS_OBJECT); }
 				~HashTable();
-	void		init(size_t primary_size, int (*key_eq_fn)(void*, void*), INT_PTR (*key_hash_fn)(void*), int flags);
+	void		init(size_t primary_size, int (*key_eq_fn)(void*, void*), int (*key_hash_fn)(void*), int flags);
 				// Win64 Cleanup: Shuler
 
 	static void	setup();

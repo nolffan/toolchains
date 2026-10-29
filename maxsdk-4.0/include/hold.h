@@ -31,7 +31,7 @@ class RestoreObj : public InterfaceServer {
 		virtual int Size() { return 1; }
 		virtual void EndHold() { }
 		virtual TSTR Description() { return TSTR(_T("---")); }
-		virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) {return -1;}
+		virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) {return -1;}
 			// WIN64 Cleanup: Shuler
 	};
 

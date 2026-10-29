@@ -61,7 +61,7 @@ class ViewParams : public BaseInterfaceServer {
 		float nearRange; // for fog effects
 		float farRange;  // for fog effects
 		// Generic expansion function
-		virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
+		virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
 	};
 
 
@@ -183,7 +183,7 @@ public:
 	}
 
 	// Generic expansion function
-	virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; }
+	virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; }
 };
 
 // These are passed to the renderer on every frame
@@ -205,7 +205,7 @@ class FrameRendParams : public BaseInterfaceServer {
 
 	FrameRendParams() { frameDuration = 1.0f; relSubFrameDuration = 1.0f; }
 	// Generic expansion function
-	virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
+	virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
 	};
 
 // Since this dialog is modless and non-interactive, as the user changes
@@ -309,7 +309,7 @@ public:
 
 	// This is for use only by the scanline renderer.
 	virtual float GetMaxPixelSize() = 0;
-	virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
+	virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
 
 	// JBW 12/1/98: get interface to rollup window interface
 	virtual IRollupWindow* GetIRollup()=0;
@@ -370,7 +370,7 @@ public:
 	virtual void GetObjVerts(int fnum, Point3 obp[3])=0; // vertices of face in object coords
 	virtual void GetCamVerts(int fnum, Point3 cp[3])=0; // vertices of face in camera(view) coords
 	// Generic expansion function
-	virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
+	virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
 
 	// Material-by-face access
 	// Objects can provide a material as a function of face number via the IChkMtlAPI interface (chkmtlapi.h).
@@ -475,7 +475,7 @@ struct SubRendParams : public BaseInterfaceServer
 	// parameters for render blowup.
 	Point2 blowupCenter;
 	Point2 blowupFactor;
-	virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
+	virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
 };
 
 // flags passed to RenderMapsContext::Render()
@@ -503,7 +503,7 @@ public:
 	// represents a clip plane.  nClip Planes is the number of planes (up to 6);
 	// The planes are in View space.
 	virtual	int Render(Bitmap *bm, ViewParams &vp, SubRendParams &srp, Point4 *clipPlanes=NULL, int nClipPlanes=0)=0; 
-	virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
+	virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
 };	
 
 

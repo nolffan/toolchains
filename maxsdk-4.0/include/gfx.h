@@ -371,7 +371,7 @@ public:
 	DWORD		winStyle;
 	POINT		size;
 	POINT		place;
-	INT_PTR			id;
+	int			id;
 				// WIN64 Cleanup: Shuler
 	int			type;
 };

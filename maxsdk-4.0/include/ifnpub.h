@@ -80,8 +80,8 @@ class Interval;
 class Color;
 class Value;
 
-typedef INT_PTR StringResID;
-typedef INT_PTR ResID;
+typedef int StringResID;
+typedef int ResID;
 typedef short MapID;
 
 // FPStatus values

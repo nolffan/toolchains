@@ -30,7 +30,7 @@ class HSVCallback {
 	};
 
 // Put up the Modal dialog.
-extern CoreExport INT_PTR HSVDlg_Do(
+extern CoreExport int HSVDlg_Do(
 		// WIN64 Cleanup: Shuler
 	HWND hwndOwner, 		// owning window
 	DWORD *lpc,				// pointer to color to be edited
@@ -83,7 +83,7 @@ CoreExport IPoint2 GetCPInitPos(void);
 class ColPick : public InterfaceServer {
 	public:
 	// Do Modal dialog
-	virtual INT_PTR ModalColorPicker(
+	virtual int ModalColorPicker(
 			// WIN64 Cleanup: Shuler
 		HWND hwndOwner, 		// owning window
 		DWORD *lpc,				// pointer to color to be edited
@@ -104,7 +104,7 @@ class ColPick : public InterfaceServer {
 	virtual const TCHAR *ClassName()=0;
 	virtual Class_ID ClassID()=0;
 	virtual void DeleteThis()=0;
-	virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0)=0; 
+	virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0)=0; 
 	};
 
 //--------------------------------------------------------------------------

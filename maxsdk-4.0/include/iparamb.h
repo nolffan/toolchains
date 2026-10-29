@@ -221,7 +221,7 @@ class ParamBlockPLCB : public PostLoadCallback {
 			{versions=v;count=cnt;cur=c;targ=t;pbRefNum=refNum;}
 		CoreExport void proc(ILoad *iload);
 		int Priority() { return 0; }
-		CoreExport INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0);
+		CoreExport int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0);
 	};
 
 

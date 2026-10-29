@@ -193,15 +193,15 @@ class SSNamedSelSetList {
 class IntersectPt;	// Internal class
 
 class SplineShape : public ShapeObject, ISplineOps, ISplineSelect, ISplineSelectData, ISubMtlAPI, AttachMatDlgUser {
-	friend INT_PTR CALLBACK SplineGenDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
+	friend int CALLBACK SplineGenDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
 			// WIN64 Cleanup: Shuler
-	friend INT_PTR CALLBACK SplineSelectDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
+	friend int CALLBACK SplineSelectDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
 			// WIN64 Cleanup: Shuler
-	friend INT_PTR CALLBACK SplineOpsDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
+	friend int CALLBACK SplineOpsDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
 		// WIN64 Cleanup: Shuler
-	friend INT_PTR CALLBACK SplineSurfDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
+	friend int CALLBACK SplineSurfDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
 		// WIN64 Cleanup: Shuler
-	friend INT_PTR CALLBACK SelectByDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
+	friend int CALLBACK SelectByDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
 		// WIN64 Cleanup: Shuler
 	friend class SSXFormProc;
 	friend class SSOutlineCMode;
@@ -425,7 +425,7 @@ class SplineShape : public ShapeObject, ISplineOps, ISplineSelect, ISplineSelect
 		CoreExport void SetNamedSelSetName(int i,TSTR &newName);
 		CoreExport void NewSetByOperator(TSTR &newName,Tab<int> &sets,int op);
 		CoreExport BOOL GetUniqueSetName(TSTR &name);
-		CoreExport INT_PTR SelectNamedSet();
+		CoreExport int SelectNamedSet();
 			// WIN64 Cleanup: Shuler
 		CoreExport void NSCopy();
 		CoreExport void NSPaste();
@@ -605,7 +605,7 @@ class SplineShape : public ShapeObject, ISplineOps, ISplineSelect, ISplineSelect
 		CoreExport int GetBoolOperation() { return boolType; }
 		CoreExport int GetMirrorOperation() { return mirrorType; }
 		CoreExport int GetBoolCursorID();
-		CoreExport int GetBoolMirrString(UINT_PTR type);
+		CoreExport int GetBoolMirrString(unsigned int type);
 			// WIN64 Cleanup: Shuler
 		CoreExport void SetBooleanButton();
 		CoreExport void SetMirrorButton();

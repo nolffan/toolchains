@@ -33,8 +33,8 @@ typedef short MapID;
 // WIN64 Cleanup: Shuler
 // Need a String ResourcId Type
 // Correct this if it doesn't fit with design!
-typedef INT_PTR StringResID;
-typedef INT_PTR ResID;
+typedef int StringResID;
+typedef int ResID;
 
 // per descriptor flags
 #define P_CLASS_PARAMS		0x0001		// this block holds class-level parameters, attached to ClassDesc
@@ -663,7 +663,7 @@ public:
 
 	PB2Export void proc(ILoad *iload);
 	int Priority() { return 0; }
-	PB2Export INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0);
+	PB2Export int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0);
 };
 
 #endif

@@ -114,7 +114,7 @@ class DADMgr : public InterfaceServer {
 		virtual BOOL AlwaysSendButtonMsgsOnDrop(){ return FALSE; }
 
 		// Generic expansion function
-		virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
+		virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
 
 		// called on potential target to see if can instance "dropThis" at this x,y
 		virtual BOOL OkToDropInstance(ReferenceTarget *dropThis, HWND hfrom, HWND hto, POINT p, SClass_ID type) { return TRUE; }
@@ -132,7 +132,7 @@ class ICustomControl : public InterfaceServer {
 		// The effective enable state is the AND of these two enable bits.
 		virtual void Enable2(BOOL onOff=TRUE)=0;
 		// Generic expansion function
-		virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
+		virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
 	};
 
 // This is a bitmap brush where the bitmap is a gray and white checker board.

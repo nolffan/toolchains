@@ -332,7 +332,7 @@ typedef struct			// parameter descriptor struct
 		float		fval;
 		int			ival;
 		BOOL		bval;
-		INT_PTR		pval;	// WIN64 Cleanup: Shuler -Need a pointer sized type (see TYPE_STRING)
+		int		pval;	// WIN64 Cleanup: Shuler -Need a pointer sized type (see TYPE_STRING)
 		struct		{float x, y, z;};
 		struct		{float r, g, b;};
 		struct		{float h, s, v;};

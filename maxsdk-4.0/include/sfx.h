@@ -73,7 +73,7 @@ public:
 	virtual ReferenceTarget* GetThing()=0;
 	virtual void SetTime(TimeValue t) { }		
 	virtual void DeleteThis()=0;		
-	virtual INT_PTR Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
+	virtual int Execute(int cmd, ULONG_PTR arg1=0, ULONG_PTR arg2=0, ULONG_PTR arg3=0) { return 0; } 
 	virtual void InvalidateUI() { }	
 };
 
