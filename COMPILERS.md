@@ -36,7 +36,11 @@ says where each tree comes from.
 SP5's back end (`msvc-6.00-8966`) was also tried against the engine
 binaries and the launcher and matched nothing the held revisions do not.
 The Processor Pack's (`msvc-6.00-9044`, a 13.00 file version on a build-9044
-back end) has not been tried against them yet.
+back end) has not been tried against them yet. It is the compiler of the
+AvP2 "Talon" DEdit and ModelEdit (AvP2 Tools Update 1/2, Dec 2001), whose
+Rich headers have product 0x31 (C++) build 9044: a test compile with it
+gives `@comp.id` 0x312354 for C++ and 0x302354 for C (lithtools
+`INVENTORY.md`).
 
 ## A second, exact oracle: `@comp.id`
 
