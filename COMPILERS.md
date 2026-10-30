@@ -150,6 +150,16 @@ have not been tried against it yet.
 may have been built with it, and that cannot be ruled out until it has been
 tried. If you have it, see "Wanted" in `toolchain/README.md`.
 
+**NOLF Tools 001's Processor.exe (2001-01-03) is icl 4.0 too**, but not quite
+the held build 99100: the shipped code never inlines into a function with a C++
+EH frame, nor inlines a function that has one, and 99100 does under every
+switch and pragma tried, mcpcom's `-m` options included (lithtools
+`talon/progress/Processor-nolf-map.md`). 4.5 (build 00015) is further off, and
+5.0.1 matches almost nothing (1 to 6 functions per file against 4.0's 52 to
+309), so it is another 4.0 build. archive.org has none other than the trial
+held here: the 4.5 trials and 5.0.1 on the compilation discs are the builds
+held. A retail 4.0, or a VTune 4.0 bundle's, is wanted.
+
 ## Contract J.A.C.K.: Visual C++ .NET 2003
 
 Every Monolith binary of Contract J.A.C.K. 1.1 (`Lithtech.exe`,
