@@ -2,7 +2,7 @@
 # Assemble toolchain/ from public copies of the original compiler media.
 #
 #   bash toolchain/fetch.sh [--force] [msvc-5.00-7303] [msvc-7.10-3077] [msvc-6.00-9782] [msvc-6.00-8168] [msvc-6.00-8447]
-#                           [msvc-6.00-8966] [msvc-6.00-9044] [dxsdk-8.1] [icl-4.0] [icl-4.5] [icl-5.0.1] [icl-6.0.078]
+#                           [msvc-6.00-8966] [msvc-6.00-9044] [dxsdk-8.1] [dxsdk-9.0] [icl-4.0] [icl-4.5] [icl-5.0.1] [icl-6.0.078]
 #                           [icl-8.0.046] [icl-9.0.022] [directmusic-5.3.1.904]
 #                           [maxsdk-3.0] [maxsdk-4.0] [maya-3.0-devkit] [maya-4.0-devkit]
 #
@@ -49,6 +49,11 @@ VS71D2_URL='https://archive.org/download/microsoft-visual-studio-.-net-2003-prof
 VS71D2_SHA=75a818e81ea1609da61f2916a74548e0448fd85787245b67f3acc5805461ae17
 DXSDK81_URL='https://archive.org/download/dx81sdk_full/dx81sdk_full.exe'
 DXSDK81_SHA=73f6791e0ae7f8a1d74f71d8ebe517a79c0cbf03fd344424696fd7a3816d2d02
+# The DirectX 9.0 SDK (December 2002), a self-extracting zip. 9.0a and 9.0b
+# ship the same Include/ and Lib/, byte for byte (Tron 2.0's engine links its
+# d3dx9.lib, D3D_SDK_VERSION 31).
+DXSDK90_URL='https://archive.org/download/dx9sdk/dx9sdk.exe'
+DXSDK90_SHA=3825dec89efddf2501a66d50ccddc92030b5f9c9b207f9ade4c15ae16292a20a
 # The February 2010 DirectX End-User Runtime redistributable (the one
 # winetricks' DirectMusic verbs use), from the Wayback Machine's copy of
 # Microsoft's download.
@@ -106,6 +111,7 @@ declare -A TREE_SHA=(
     [msvc-6.00-8966]=43aa462a12e7dfc72055ee8253a11a995d8c092f61a2ccc2985bb1150d39a3ca
     [msvc-6.00-9044]=41ba040bfa329c9d33d780b38cf99b2b976e05391961e702ff879c247ec59793
     [dxsdk-8.1]=f086a340ad92e84b0e28325088c47247ae4048467e5cee6208cb396028c17df8
+    [dxsdk-9.0]=e6e801bed8c67a6b15ab6154b2a3b4b830fb9df7a3ec612ee0cc6074f81992ea
     [icl-4.0]=0355308ba40347b1ec7d75ffc46736735b5230a25c27aa9e5f4f6e399a6bb8f7
     [icl-4.5]=c7e45803afa919a8b256e6050c92cb1021e98c11b59e416e72f05a25126fdbab
     [icl-5.0.1]=2f050e98b9985a39652b167a6b7fa853cc9dddc7b048775e7778af24fc46650f
@@ -118,13 +124,13 @@ declare -A TREE_SHA=(
     [maya-3.0-devkit]=f48a4cff2fdd7d940376ed22ece6f7657e00d13fd0a77aa3efaad8bd9b392f88
     [maya-4.0-devkit]=a8c95d7e5bd252520ee8a3f5354a5390e894fbc983b62a5082a3651d514d3581
 )
-ALL=(msvc-5.00-7303 msvc-7.10-3077 msvc-6.00-9782 msvc-6.00-8168 msvc-6.00-8447 msvc-6.00-8966 msvc-6.00-9044 dxsdk-8.1 icl-4.0 icl-4.5 icl-5.0.1 icl-6.0.078 icl-8.0.046 icl-9.0.022 directmusic-5.3.1.904 maxsdk-3.0 maxsdk-4.0 maya-3.0-devkit maya-4.0-devkit)
+ALL=(msvc-5.00-7303 msvc-7.10-3077 msvc-6.00-9782 msvc-6.00-8168 msvc-6.00-8447 msvc-6.00-8966 msvc-6.00-9044 dxsdk-8.1 dxsdk-9.0 icl-4.0 icl-4.5 icl-5.0.1 icl-6.0.078 icl-8.0.046 icl-9.0.022 directmusic-5.3.1.904 maxsdk-3.0 maxsdk-4.0 maya-3.0-devkit maya-4.0-devkit)
 # What each tree's build needs beyond curl, sha256sum and python3.
 declare -A NEEDS=(
     [msvc-5.00-7303]="bsdtar cabextract"
     [msvc-7.10-3077]="bsdtar 7z cabextract unar unshield" [msvc-6.00-9782]="" [msvc-6.00-8168]="bsdtar 7z cabextract unar unshield"
     [msvc-6.00-8447]="bsdtar 7z cabextract unar unshield" [msvc-6.00-8966]="bsdtar 7z cabextract unar unshield"
-    [msvc-6.00-9044]="bsdtar 7z cabextract unar unshield" [dxsdk-8.1]="7z" [icl-4.0]="7z unar unshield"
+    [msvc-6.00-9044]="bsdtar 7z cabextract unar unshield" [dxsdk-8.1]="7z" [dxsdk-9.0]="" [icl-4.0]="7z unar unshield"
     [icl-4.5]="7z cabextract unar unshield" [icl-5.0.1]="unshield" [icl-6.0.078]="7z unshield" [icl-8.0.046]="7z"
     [icl-9.0.022]="7z" [directmusic-5.3.1.904]="7z cabextract"
     [maxsdk-3.0]="" [maxsdk-4.0]="" [maya-3.0-devkit]="unshield" [maya-4.0-devkit]="unshield"
@@ -416,6 +422,25 @@ build_7103077() {
 # The DirectX 8.1 SDK (October 2001): its include/ and lib/ as shipped, and
 # its readme. The download is a self-extracting zip whose DXSDK/ folder is
 # the SDK's install tree.
+# The DirectX 9.0 SDK (December 2002): its Include/ and Lib/ as shipped, and
+# its readme, read out of the self-extracting zip with python3.
+build_dxsdk90() {
+    local out="$1"
+    fetch dx9sdk.exe "$DXSDK90_URL" "$DXSDK90_SHA"
+    mkdir -p "$out"
+    python3 -I - "$DL/dx9sdk.exe" "$out" <<'PY'
+import os, sys, zipfile
+z = zipfile.ZipFile(sys.argv[1])
+for n in z.namelist():
+    if n.endswith('/') or not (n.startswith(('Include/', 'Lib/')) or n == 'dxreadme.htm'):
+        continue
+    dest = os.path.join(sys.argv[2], n)
+    os.makedirs(os.path.dirname(dest), exist_ok=True)
+    with open(dest, 'wb') as f:
+        f.write(z.read(n))
+PY
+}
+
 build_dxsdk81() {
     local out="$1" x="$WORK/dx81"
     fetch dx81sdk_full.exe "$DXSDK81_URL" "$DXSDK81_SHA"
@@ -700,6 +725,7 @@ build() {
         msvc-6.00-8966) build_8966 "$tmp" ;;
         msvc-6.00-9044) build_9044 "$tmp" ;;
         dxsdk-8.1)      build_dxsdk81 "$tmp" ;;
+        dxsdk-9.0)      build_dxsdk90 "$tmp" ;;
         icl-4.0)        build_icl4 "$tmp" ;;
         icl-4.5)        build_icl45 "$tmp" ;;
         icl-5.0.1)      build_icl5 "$tmp" ;;
@@ -725,7 +751,7 @@ for a in "$@"; do
     case "$a" in
         --force) FORCE=1 ;;
         -h|--help) sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
-        msvc-5.00-7303|msvc-7.10-3077|msvc-6.00-9782|msvc-6.00-8168|msvc-6.00-8447|msvc-6.00-8966|msvc-6.00-9044|dxsdk-8.1|icl-4.0|icl-4.5|icl-5.0.1|icl-6.0.078|icl-8.0.046|icl-9.0.022|directmusic-5.3.1.904|maxsdk-3.0|maxsdk-4.0|maya-3.0-devkit|maya-4.0-devkit)
+        msvc-5.00-7303|msvc-7.10-3077|msvc-6.00-9782|msvc-6.00-8168|msvc-6.00-8447|msvc-6.00-8966|msvc-6.00-9044|dxsdk-8.1|dxsdk-9.0|icl-4.0|icl-4.5|icl-5.0.1|icl-6.0.078|icl-8.0.046|icl-9.0.022|directmusic-5.3.1.904|maxsdk-3.0|maxsdk-4.0|maya-3.0-devkit|maya-4.0-devkit)
             targets+=("$a") ;;
         *) die "unknown argument: $a (try --help)" ;;
     esac
